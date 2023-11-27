@@ -48,7 +48,7 @@ struct Cam16:
 
   @staticmethod
   fn from_int(argb: Int) -> Cam16:
-      return Self.from_int_in_viewing_conditions(argb, ViewingConditions.srgb_viewing_conditions)
+      return Self.from_int_in_viewing_conditions(argb, ViewingConditions.srgb())
 
   @staticmethod
   fn from_int_in_viewing_conditions(argb: Int, viewing_conditions: ViewingConditions
@@ -121,7 +121,7 @@ struct Cam16:
 
   @staticmethod
   fn fromJch(j: Float32, c: Float32, h: Float32) -> Cam16:
-    return Self.fromJchInViewingConditions(j, c, h, ViewingConditions.srgb_viewing_conditions)
+    return Self.fromJchInViewingConditions(j, c, h, ViewingConditions.srgb())
 
   @staticmethod
   fn fromJchInViewingConditions(
@@ -145,7 +145,7 @@ struct Cam16:
   # assuming the color was viewed in default viewing conditions.
   @staticmethod
   fn fromUcs(jstar: Float32, astar: Float32, bstar: Float32) -> Cam16:
-    return Self.fromUcsInViewingConditions(jstar, astar, bstar, ViewingConditions.standard_viewing_conditions)
+    return Self.fromUcsInViewingConditions(jstar, astar, bstar, ViewingConditions.standard())
 
   # Create a CAM16 color from CAM16-UCS coordinates [jstar], [astar], [bstar].
   # in [viewingConditions].
@@ -166,7 +166,7 @@ struct Cam16:
     return Self.fromJchInViewingConditions(j, c, h, viewingConditions)
 
   fn to_int(inout self: Cam16) -> Int:
-      return self.viewed(self, ViewingConditions.srgb_viewing_conditions)
+      return self.viewed(self, ViewingConditions.srgb())
 
   fn viewed(inout self, cam16: Cam16, viewing_conditions: ViewingConditions) -> Int:
       let xyz: StaticTuple[3, Float32] = Self.xyz_in_viewing_conditions(cam16, viewing_conditions)

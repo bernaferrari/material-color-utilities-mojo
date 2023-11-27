@@ -11,7 +11,7 @@ from lib.utils.math_utils import (
 
 struct Blend:
     @staticmethod
-    def harmonize(design_color: Int, source_color: Int) -> Int:
+    fn harmonize(design_color: Int, source_color: Int) -> Int:
         let from_hct = Hct.from_int(design_color)
         let to_hct = Hct.from_int(source_color)
         let difference_degrees = differenceDegrees(from_hct.hue, to_hct.hue)
@@ -20,10 +20,14 @@ struct Blend:
             from_hct.hue
             + rotation_degrees * rotationDirection(from_hct.hue, to_hct.hue)
         )
-        return Hct.from_hct(output_hue, from_hct.chroma, from_hct.tone).to_int()
+        let returnValue = Hct.from_hct(output_hue, from_hct.chroma, from_hct.tone)
+        let intReturnValue = Hct.to_int2(
+            Hct.from_hct(output_hue, from_hct.chroma, from_hct.tone)
+        )
+        return intReturnValue
 
     @staticmethod
-    def hct_hue(from_color: Int, to_color: Int, amount: Float32) -> Int:
+    fn hct_hue(from_color: Int, to_color: Int, amount: Float32) -> Int:
         let ucs = Blend.cam16_ucs(from_color, to_color, amount)
         let ucs_cam = Cam16.from_int(ucs)
         let from_cam = Cam16.from_int(from_color)
@@ -33,7 +37,7 @@ struct Blend:
         return blended.to_int()
 
     @staticmethod
-    def cam16_ucs(from_color: Int, to_color: Int, amount: Float32) -> Int:
+    fn cam16_ucs(from_color: Int, to_color: Int, amount: Float32) -> Int:
         let from_cam = Cam16.from_int(from_color)
         let to_cam = Cam16.from_int(to_color)
         let from_j = from_cam.jstar

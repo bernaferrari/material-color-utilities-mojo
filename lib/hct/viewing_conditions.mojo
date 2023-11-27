@@ -68,16 +68,16 @@ struct ViewingConditions:
         surround: Float32 = 2.0,
         discountingIlluminant: Bool = False,
     ) -> ViewingConditions:
-        var adaptingLuminanceLocal = adaptingLuminance if adaptingLuminance > 0 else (
+        let adaptingLuminanceLocal = adaptingLuminance if adaptingLuminance > 0 else (
             200 / MathPi * ColorUtils.yFromLstar(50) / 100.0
         )
-        var backgroundLstarLocal = max(0.1, backgroundLstar)
+        let backgroundLstarLocal = max(0.1, backgroundLstar)
 
         # Transform test illuminant white in XYZ to 'cone'/'rgb' responses
-        var xyz = whitePoint
-        var rW = xyz[0] * 0.401288 + xyz[1] * 0.650173 + xyz[2] * -0.051461
-        var gW = xyz[0] * -0.250268 + xyz[1] * 1.204414 + xyz[2] * 0.045854
-        var bW = xyz[0] * -0.002079 + xyz[1] * 0.048952 + xyz[2] * 0.953127
+        let xyz = whitePoint
+        let rW = xyz[0] * 0.401288 + xyz[1] * 0.650173 + xyz[2] * -0.051461
+        let gW = xyz[0] * -0.250268 + xyz[1] * 1.204414 + xyz[2] * 0.045854
+        let bW = xyz[0] * -0.002079 + xyz[1] * 0.048952 + xyz[2] * 0.953127
 
         # Scale input surround, domain (0, 2), to CAM16 surround, domain (0.8, 1.0)
 
@@ -86,13 +86,15 @@ struct ViewingConditions:
         )
 
         let f = 0.8 + (surround / 10.0)
-        var c = lerp(0.59, 0.69, ((f - 0.9) * 10.0)) if f >= 0.9 else lerp(
+        let c = lerp(0.59, 0.69, ((f - 0.9) * 10.0)) if f >= 0.9 else lerp(
             0.525, 0.59, ((f - 0.8) * 10.0)
         )
 
+        let expCalculation = exp[DType.float32, 1]((-adaptingLuminanceLocal - 42.0) / 92.0)
+
         # Calculate degree of adaptation to illuminant
         var d = 1.0 if discountingIlluminant else f * (
-            1.0 - ((1.0 / 3.6) * exp((-adaptingLuminanceLocal - 42.0) / 92.0))
+            1.0 - ((1.0 / 3.6) * expCalculation)
         )
         d = min(max(d, 0.0), 1.0)  # Limit d to [0, 1]
 
@@ -144,7 +146,10 @@ struct ViewingConditions:
             z,
         )
 
-    alias srgb_viewing_conditions = ViewingConditions.make_viewing_conditions(
-        ColorUtils.whitePointD65
-    )
-    alias standard_viewing_conditions = ViewingConditions.srgb_viewing_conditions
+    @staticmethod
+    fn srgb() -> ViewingConditions:
+        return ViewingConditions.make_viewing_conditions(ColorUtils.whitePointD65)
+
+    @staticmethod
+    fn standard() -> ViewingConditions:
+        return Self.srgb()

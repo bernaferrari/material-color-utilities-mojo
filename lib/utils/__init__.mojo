@@ -6,3 +6,4 @@ from .math_utils import (
     sanitizeDegreesDouble,
 )
 from .color_utils import ColorUtils
+from .string_utils import StringUtils

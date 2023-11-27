@@ -29,14 +29,18 @@ struct Hct:
       let tone = ColorUtils.lstarFromArgb(argb)
       return Hct(hue, chroma, tone, argb)
 
-  fn to_int(hct: Hct) -> Int:
+  fn to_int(inout self) -> Int:
+      return self.argb
+
+  @staticmethod
+  fn to_int2(hct: Hct) -> Int:
       return hct.argb
 
-  fn get_hue(hct: Hct) -> Float32:
-      return hct.hue
+  fn get_hue(inout self) -> Float32:
+      return self.hue
 
-  fn get_tone(hct: Hct) -> Float32:
-    return hct.tone
+  fn get_tone(inout self) -> Float32:
+    return self.tone
 
   fn set_hue(inout self: Hct, new_hue: Float32):
       self.argb = HctSolver.solve_to_int(new_hue, self.chroma, self.tone)
@@ -63,7 +67,8 @@ struct Hct:
       self.tone = ColorUtils.lstarFromArgb(self.argb)
 
   fn in_viewing_conditions(inout self: Hct, vc: ViewingConditions) -> Hct:
-      let cam16 = Cam16.from_int(self.to_int())
+      let hct_to_int = self.to_int()
+      let cam16 = Cam16.from_int(hct_to_int)
 
       let viewed_in_vc = cam16.xyz_in_viewing_conditions(vc)
       let recast_in_vc = cam16.from_xyz_in_viewing_conditions(

@@ -301,7 +301,7 @@ struct HctSolver:
     @staticmethod
     fn true_delinearized(rgb_component: Float32) -> Float32:
         let normalized = rgb_component / 100.0
-        var delinearized: Float32
+        let delinearized: Float32
         if normalized <= 0.0031308:
             delinearized = normalized * 12.92
         else:
@@ -464,12 +464,12 @@ struct HctSolver:
                 for i in range(8):
                     if math.abs(r_plane - l_plane) <= 1:
                         break
-                    var m_plane = ((l_plane + r_plane) / 2).to_int()
-                    var mid_plane_coordinate = Self.critical_planes[m_plane]
-                    var mid = Self.set_coordinate(
+                    let m_plane = ((l_plane + r_plane) / 2).to_int()
+                    let mid_plane_coordinate = Self.critical_planes[m_plane]
+                    let mid = Self.set_coordinate(
                         left, mid_plane_coordinate, right, axis
                     )
-                    var mid_hue = Self.hue_of(mid)
+                    let mid_hue = Self.hue_of(mid)
                     if Self.are_in_cyclic_order(left_hue, target_hue, mid_hue):
                         right = mid
                         r_plane = m_plane
@@ -488,7 +488,7 @@ struct HctSolver:
     @staticmethod
     fn find_result_by_j(hue_radians: Float32, chroma: Float32, y: Float32) -> Int:
         var j = math.sqrt(y) * 11.0
-        let viewing_conditions = ViewingConditions.standard_viewing_conditions
+        let viewing_conditions = ViewingConditions.standard()
         let t_inner_coeff = 1 / float_pow(
             1.64 - float_pow(0.29, viewing_conditions.backgroundYTowhitePointY), 0.73
         )
