@@ -36,6 +36,13 @@ As Mojo evolves, it will be fun to use `Tensor` instead of `StaticTuple[3, Stati
 
 Material Color Utilities is a fun project. It has implementation in 4 languages (Dart, C++, Swift and TypeScript), they are all tested, and it has periodical usage of matrix operations. It is a great candidate for benchmarking how fast Mojo is.
 
+Initial Benchmark (benchmark_blend.mojo):
+
+- Mojo: 0.8s
+- Dart: 1.2s
+
+More benchmarks soon (as well as paralellization).
+
 --- Original README:
 
 Algorithms and utilities that power the Material Design 3 (M3) color system,
