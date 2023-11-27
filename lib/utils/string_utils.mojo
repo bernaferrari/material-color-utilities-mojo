@@ -2,14 +2,16 @@ from .color_utils import ColorUtils
 
 
 fn int_to_hex(number: Int) -> String:
-    let hex_digits: String = String("0123456789ABCDEF")
-    var hex_str: String = String("")
-    var num = number
+    let hex_digits = String("0123456789ABCDEF")
+    var hex_str = String("")
     var min_length: Int = 2
+    var num = number
+
     while num > 0 or min_length > 0:
-        hex_str = hex_digits[number % 16] + hex_str
+        hex_str = hex_digits[num % 16] + hex_str
         num //= 16
         min_length -= 1
+
     return hex_str
 
 

@@ -20,7 +20,6 @@ struct Blend:
             from_hct.hue
             + rotation_degrees * rotationDirection(from_hct.hue, to_hct.hue)
         )
-        let returnValue = Hct.from_hct(output_hue, from_hct.chroma, from_hct.tone)
         let intReturnValue = Hct.to_int2(
             Hct.from_hct(output_hue, from_hct.chroma, from_hct.tone)
         )

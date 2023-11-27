@@ -26,7 +26,6 @@ struct Hct:
       let cam16 = Cam16.from_int(argb)
       let hue = cam16.hue
       let chroma = cam16.chroma
-      print('chroma', chroma)
       let tone = ColorUtils.lstarFromArgb(argb)
       return Hct(hue, chroma, tone, argb)
 

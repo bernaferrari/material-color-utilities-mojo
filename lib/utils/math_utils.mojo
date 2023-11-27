@@ -58,14 +58,17 @@ fn sanitizeDegreesDouble(degrees: Float32) -> Float32:
     var localDegrees = degrees % 360.0
     if localDegrees < 0.0:
         localDegrees += 360.0
-    return degrees
+    return localDegrees
 
 
 # Sign of direction change needed to travel from one angle to another.
 # Returns -1 if decreasing from leads to the shortest travel distance, 1 if increasing from leads to the shortest travel distance.
 fn rotationDirection(fromValue: Float32, toValue: Float32) -> Float32:
     let increasingDifference = sanitizeDegreesDouble(toValue - fromValue)
-    return 1.0 if increasingDifference <= 180.0 else -1.0
+    if (increasingDifference <= 180.0):
+        return 1.0
+    else:
+        return -1
 
 
 # Distance of two points on a circle, represented using degrees.
