@@ -8,31 +8,33 @@ To execute: `mojo blend_test.mojo`
 
 This is what is implemented right now. The most complex, low level stuff are mostly complete, while the higher level stuff (such as palettes, scheme) are still in progress:
 
-✅ blend
+- ✅ blend
 
-✅ contrast
+- ✅ contrast
 
-✅ dislike
+- ✅ dislike
 
-[ ] dynamic color
+- [ ] dynamic color
 
-✅ hct
+- ✅ hct
 
-[ ] palettes
+- [ ] palettes
 
-[ ] quantize
+- [ ] quantize
 
-[ ] scheme
+- [ ] scheme
 
-[ ] score
+- [ ] score
 
-[ ] temperature
+- [ ] temperature
 
-✅ utilities
+- ✅ utilities
 
-[ ] tests
+- [ ] tests
 
 As Mojo evolves, it will be fun to use `Tensor` instead of `StaticTuple[3, StaticTuple[3, Float32]]`, add tests, and optimize for paralellization. There are many matrix operations that could be optimized by SIMD.
+
+Material Color Utilities is a fun project. It has implementation in 4 languages (Dart, C++, Swift and TypeScript), they are all tested, and it has periodical usage of matrix operations. It is a great candidate for benchmarking how fast Mojo is.
 
 --- Original README:
 
