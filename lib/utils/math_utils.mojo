@@ -83,7 +83,6 @@ fn matrixMultiply(
 
     return StaticTuple[3, Float32](a, b, c)
 
-
 # # Multiplies a 1x3 row vector with a 3x3 matrix.
 # fn matrixMultiply(row: Tensor[DType.float32], matrix: Tensor[DType.float32]) -> Tensor[DType.float32]:
 #     let a = row.at(0) * matrix.at(0, 0) + row.at(1) * matrix.at(0, 1) + row.at(2) * matrix.at(0, 2)

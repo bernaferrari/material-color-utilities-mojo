@@ -18,6 +18,6 @@ fn main():
     alias yellow: Int = 0xFFFFFF00
 
     let t1 = Blend.harmonize(red, blue)
-    let rs1 = assert_equal(t1, 4293411840)
+    let rs1 = assert_equal('BB0066', StringUtils.hexFromArgb(t1))
     print("t1 is", StringUtils.hexFromArgb(t1))
     

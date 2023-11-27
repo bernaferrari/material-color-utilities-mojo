@@ -43,7 +43,7 @@ struct Cam16:
       let dA: Float32 = cam16_1.astar - cam16_2.astar
       let dB: Float32 = cam16_1.bstar - cam16_2.bstar
       let dEPrime: Float32 = math.sqrt(dJ * dJ + dA * dA + dB * dB)
-      let dE: Float32 = 1.41 * (dEPrime**0.63)
+      let dE: Float32 = 1.41 * float_pow(dEPrime, 0.63)
       return dE
 
   @staticmethod
@@ -71,20 +71,22 @@ struct Cam16:
       let gD: Float32 = viewing_conditions.rgbD[1] * gC
       let bD: Float32 = viewing_conditions.rgbD[2] * bC
 
-      let rA: Float32 = 400.0 * (
-          viewing_conditions.fl * math.abs(rD) / 100.0 ** 0.42
-      ) / ((viewing_conditions.fl * math.abs(rD) / 100.0 ** 0.42) + 27.13)
-      let gA: Float32 = 400.0 * (
-          viewing_conditions.fl * math.abs(gD) / 100.0 ** 0.42
-      ) / ((viewing_conditions.fl * math.abs(gD) / 100.0 ** 0.42) + 27.13)
-      let bA: Float32 = 400.0 * ((
-          viewing_conditions.fl * math.abs(bD) / 100.0) ** 0.42
-      ) / (((viewing_conditions.fl * math.abs(bD) / 100.0) ** 0.42) + 27.13)
+      let rAF =  float_pow(viewing_conditions.fl * math.abs(rD) / 100.0, 0.42);
+      let gAF =float_pow(viewing_conditions.fl * math.abs(gD) / 100.0, 0.42);
+      let bAF = float_pow(viewing_conditions.fl * math.abs(bD) / 100.0, 0.42)
 
-      let a: Float32 = (11.0 * rA + -12.0 * gA + bA) / 11.0
-      let b: Float32 = (rA + gA - 2.0 * bA) / 9.0
-      let u: Float32 = (20.0 * rA + 20.0 * gA + 21.0 * bA) / 20.0
-      let p2: Float32 = (40.0 * rA + 20.0 * gA + bA) / 20.0
+      let rA = signum(rD) * 400.0 * rAF / (rAF + 27.13);
+      let gA = signum(gD) * 400.0 * gAF / (gAF + 27.13);
+      let bA = signum(bD) * 400.0 * bAF / (bAF + 27.13);
+
+      # redness-greenness
+      let a = (11.0 * rA + -12.0 * gA + bA) / 11.0;
+      # yellowness-blueness
+      let b = (rA + gA - 2.0 * bA) / 9.0;
+
+      # auxiliary components
+      let u = (20.0 * rA + 20.0 * gA + 21.0 * bA) / 20.0;
+      let p2 = (40.0 * rA + 20.0 * gA + bA) / 20.0;
 
       let atan2_b_a: Float32 = math.atan2(b, a)
       let atan_degrees: Float32 = atan2_b_a * 180.0 / MathPi
@@ -100,13 +102,16 @@ struct Cam16:
       ) * viewing_conditions.fLRoot
 
       let hue_prime: Float32 = hue if hue >= 20.14 else hue + 360
-      let e_hue: Float32 = (math.cos(hue_prime * MathPi / 180.0 + 2.0) + 3.8) / 4.0
+      let e_hue =
+        (1.0 / 4.0) * (math.cos(hue_prime * MathPi / 180.0 + 2.0) + 3.8);
       let p1: Float32 = 50000.0 / 13.0 * e_hue * viewing_conditions.nC * viewing_conditions.ncb
       let t: Float32 = p1 * math.sqrt(a * a + b * b) / (u + 0.305)
 
-      let alpha: Float32 = (t ** 0.9) * float_pow(
-          (1.64 - (float_pow(0.29, viewing_conditions.backgroundYTowhitePointY))), 0.73
-      )
+      let alpha = float_pow(t, 0.9) *
+        float_pow(
+            1.64 - float_pow(0.29, viewing_conditions.backgroundYTowhitePointY),
+            0.73);
+
       let c: Float32 = alpha * math.sqrt(j / 100.0)
       let m: Float32 = c * viewing_conditions.fLRoot
       let s: Float32 = 50.0 * math.sqrt(
