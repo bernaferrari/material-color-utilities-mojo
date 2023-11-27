@@ -4,10 +4,27 @@ Mojo port of the [Material Color Utilities](
     https://github.com/material-foundation/material-color-utilities/
 )
 
+This is what is implemented right now:
+
+[ x ] blend
+[ x ] contrast
+[ x ] dislike
+[ ] dynamic color
+[ x ] hct
+[ ] palettes
+[ ] quantize
+[ ] scheme
+[ ] score
+[ ] temperature
+[ x ] utilities
+[ ] tests
+
+As Mojo evolves, it will be fun to use `Tensor` instead of `StaticTuple[3, StaticTuple[3, Float32]]`, add tests, and optimize for paralellization. There are many matrix operations that could be optimized by SIMD.
+
+--- Original README:
+
 Algorithms and utilities that power the Material Design 3 (M3) color system,
 including choosing theme colors from images and creating tones of colors; all in a new color space.
-
-<video autoplay muted loop src="https://user-images.githubusercontent.com/6655696/146014425-8e8e04bc-e646-4cc2-a3e7-97497a3e1b09.mp4" data-canonical-src="https://user-images.githubusercontent.com/6655696/146014425-8e8e04bc-e646-4cc2-a3e7-97497a3e1b09.mp4" class="d-block rounded-bottom-2 width-fit" style="max-width:640px;"></video>
 
 ## Usage
 
