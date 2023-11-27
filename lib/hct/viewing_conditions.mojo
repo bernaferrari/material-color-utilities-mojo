@@ -90,7 +90,9 @@ struct ViewingConditions:
             0.525, 0.59, ((f - 0.8) * 10.0)
         )
 
-        let expCalculation = exp[DType.float32, 1]((-adaptingLuminanceLocal - 42.0) / 92.0)
+        let expCalculation = exp[DType.float32, 1](
+            (-adaptingLuminanceLocal - 42.0) / 92.0
+        )
 
         # Calculate degree of adaptation to illuminant
         var d = 1.0 if discountingIlluminant else f * (

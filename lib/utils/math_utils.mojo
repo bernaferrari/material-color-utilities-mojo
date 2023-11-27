@@ -1,6 +1,7 @@
 # Import required mathematical functions
 from math import abs, div_ceil, min
 
+
 # The signum function.
 # Returns 1 if num > 0, -1 if num < 0, and 0 if num = 0
 fn signum(num: Float32) -> Int:
@@ -65,7 +66,7 @@ fn sanitizeDegreesDouble(degrees: Float32) -> Float32:
 # Returns -1 if decreasing from leads to the shortest travel distance, 1 if increasing from leads to the shortest travel distance.
 fn rotationDirection(fromValue: Float32, toValue: Float32) -> Float32:
     let increasingDifference = sanitizeDegreesDouble(toValue - fromValue)
-    if (increasingDifference <= 180.0):
+    if increasingDifference <= 180.0:
         return 1.0
     else:
         return -1
@@ -85,6 +86,7 @@ fn matrixMultiply(
     let c = row[0] * matrix[2][0] + row[1] * matrix[2][1] + row[2] * matrix[2][2]
 
     return StaticTuple[3, Float32](a, b, c)
+
 
 # # Multiplies a 1x3 row vector with a 3x3 matrix.
 # fn matrixMultiply(row: Tensor[DType.float32], matrix: Tensor[DType.float32]) -> Tensor[DType.float32]:
