@@ -1,8 +1,12 @@
-# Material Color Utilities 🔥
+# Material Color Utilities Mojo 🔥
+
+![Image of Material Color Utilities Mojo](https://github.com/bernaferrari/material-color-utilities-mojo/raw/main/assets/readme.png)
 
 Mojo port of the [Material Color Utilities](https://github.com/material-foundation/material-color-utilities/)
 
-This is what is implemented right now. The most complex, low level stuff is mostly done, while the higher level stuff (such as palettes, scheme) is still in progress:
+To execute: `mojo blend_test.mojo`
+
+This is what is implemented right now. The most complex, low level stuff are mostly complete, while the higher level stuff (such as palettes, scheme) are still in progress:
 
 ✅ blend
 
@@ -24,7 +28,7 @@ This is what is implemented right now. The most complex, low level stuff is most
 
 [ ] temperature
 
-[ x ] utilities
+✅ utilities
 
 [ ] tests
 
@@ -69,13 +73,3 @@ every component — ex. MDC doesn’t need quantization/scoring/image extraction
 ## Background
 
 [The Science of Color & Design - Material Design](https://material.io/blog/science-of-color-design)
-
-## Design tooling
-
-The
-[Material Theme Builder](https://www.figma.com/community/plugin/1034969338659738588/Material-Theme-Builder)
-Figma plugin and
-[web tool](https://material-foundation.github.io/material-theme-builder/) are
-recommended for design workflows. The Material Theme Builder delivers dynamic
-color to where design is done. Designers can take an existing design, and see
-what it looks like under different themes, with just a couple clicks.
