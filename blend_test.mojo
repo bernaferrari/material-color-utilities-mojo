@@ -1,5 +1,5 @@
 # from lib.utils.color_utils import ColorUtils
-
+import lib.utils.color_utils as ColorUtils
 
 fn main():
     # alias red = 0xFFFF0000

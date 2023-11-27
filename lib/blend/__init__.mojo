@@ -1,1 +1,1 @@
-# from .mymodule import MyPair
+from .blend import Blend

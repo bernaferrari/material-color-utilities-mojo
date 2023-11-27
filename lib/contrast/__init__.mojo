@@ -1,1 +1,1 @@
-# from .mymodule import MyPair
+from .contrast import Contrast
