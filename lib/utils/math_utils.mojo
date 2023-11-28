@@ -82,16 +82,25 @@ struct MathUtils:
     fn matrixMultiply(
         row: StaticTuple[3, Float32], matrix: StaticTuple[3, StaticTuple[3, Float32]]
     ) -> StaticTuple[3, Float32]:
+        # # Load the row into a SIMD vector once, then use it for all operations
+        # let simd_row = SIMD[DType.float32, 4](row[0], row[1], row[2])
+
+        # #  Perform the SIMD multiplications for each row of the matrix
+        # let simd_a = simd_row * SIMD[DType.float32, 4](matrix[0][0], matrix[0][1], matrix[0][2])
+        # let simd_b = simd_row * SIMD[DType.float32, 4](matrix[1][0], matrix[1][1], matrix[1][2])
+        # let simd_c = simd_row * SIMD[DType.float32, 4](matrix[2][0], matrix[2][1], matrix[2][2])
+
+        # #  Combine the results using scalar addition since we don't have horizontal add
+        # #  Note: Accessing SIMD elements directly like arrays; actual methods may differ
+        # let a = simd_a[0] + simd_a[1] + simd_a[2]
+        # let b = simd_b[0] + simd_b[1] + simd_b[2]
+        # let c = simd_c[0] + simd_c[1] + simd_c[2]
+
+        # #  Return the result as a static tuple
+        # return StaticTuple[3, Float32](a, b, c)
+
+        # Previous code:
         let a = row[0] * matrix[0][0] + row[1] * matrix[0][1] + row[2] * matrix[0][2]
         let b = row[0] * matrix[1][0] + row[1] * matrix[1][1] + row[2] * matrix[1][2]
         let c = row[0] * matrix[2][0] + row[1] * matrix[2][1] + row[2] * matrix[2][2]
-
         return StaticTuple[3, Float32](a, b, c)
-
-
-# # Multiplies a 1x3 row vector with a 3x3 matrix.
-# fn matrixMultiply(row: Tensor[DType.float32], matrix: Tensor[DType.float32]) -> Tensor[DType.float32]:
-#     let a = row.at(0) * matrix.at(0, 0) + row.at(1) * matrix.at(0, 1) + row.at(2) * matrix.at(0, 2)
-#     let b = row.at(0) * matrix.at(1, 0) + row.at(1) * matrix.at(1, 1) + row.at(2) * matrix.at(1, 2)
-#     let c = row.at(0) * matrix.at(2, 0) + row.at(1) * matrix.at(2, 1) + row.at(2) * matrix.at(2, 2)
-#     return Tensor[Float32]([a, b, c], [3])  # Assuming 3 elements in the return vector.

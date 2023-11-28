@@ -219,9 +219,18 @@ struct Cam16:
       let b_c: Float32 = MathUtils.signum(b_a) * (100.0 / viewing_conditions.fl) * float_pow(
           b_c_base, 1.0 / 0.42
       )
+
+
+     # Optimized into SIMD:
       let r_f: Float32 = r_c / viewing_conditions.rgbD[0]
       let g_f: Float32 = g_c / viewing_conditions.rgbD[1]
       let b_f: Float32 = b_c / viewing_conditions.rgbD[2]
+
+    #   let simd_f = SIMD[DType.float32, 3](r_c, g_c, b_c) / SIMD[DType.float32, 3](viewing_conditions.rgbD[0], viewing_conditions.rgbD[1], viewing_conditions.rgbD[2])
+    #   let r_f = simd_f[0]
+    #   let g_f = simd_f[1]
+    #   let b_f = simd_f[2]
+
       let x: Float32 = 1.86206786 * r_f - 1.01125463 * g_f + 0.14918677 * b_f
       let y: Float32 = 0.38752654 * r_f + 0.62144744 * g_f - 0.00897398 * b_f
       let z: Float32 = -0.01584150 * r_f - 0.03412294 * g_f + 1.04996444 * b_f
