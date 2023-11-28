@@ -4,7 +4,7 @@ from lib.hct.viewing_conditions import ViewingConditions
 
 from lib.hct.cam16 import Cam16
 from lib.utils.color_utils import ColorUtils
-from lib.utils.math_utils import signum, matrixMultiply, sanitizeDegreesDouble
+from lib.utils.math_utils import MathUtils
 
 alias MathPi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273
 
@@ -311,11 +311,11 @@ struct HctSolver:
     @staticmethod
     fn chromatic_adaptation(component: Float32) -> Float32:
         let af = (math.abs(component) ** 0.42)
-        return signum(component) * 400.0 * af / (af + 27.13)
+        return MathUtils.signum(component) * 400.0 * af / (af + 27.13)
 
     @staticmethod
     fn hue_of(linrgb: StaticTuple[3, Float32]) -> Float32:
-        let scaled_discount = matrixMultiply(linrgb, Self.scaled_discount_from_linrgb)
+        let scaled_discount = MathUtils.matrixMultiply(linrgb, Self.scaled_discount_from_linrgb)
         let rA = Self.chromatic_adaptation(scaled_discount[0])
         let gA = Self.chromatic_adaptation(scaled_discount[1])
         let bA = Self.chromatic_adaptation(scaled_discount[2])
@@ -483,7 +483,7 @@ struct HctSolver:
     fn inverse_chromatic_adaptation(adapted: Float32) -> Float32:
         let adapted_abs = math.abs(adapted)
         let base = math.max(0, 27.13 * adapted_abs / (400.0 - adapted_abs))
-        return signum(adapted) * float_pow(base, 1.0 / 0.42)
+        return MathUtils.signum(adapted) * float_pow(base, 1.0 / 0.42)
 
     @staticmethod
     fn find_result_by_j(hue_radians: Float32, chroma: Float32, y: Float32) -> Int:
@@ -522,7 +522,7 @@ struct HctSolver:
             let r_c_scaled = Self.inverse_chromatic_adaptation(r_a)
             let g_c_scaled = Self.inverse_chromatic_adaptation(g_a)
             let b_c_scaled = Self.inverse_chromatic_adaptation(b_a)
-            let linrgb = matrixMultiply(
+            let linrgb = MathUtils.matrixMultiply(
                 StaticTuple[3, Float32](r_c_scaled, g_c_scaled, b_c_scaled),
                 Self.linrgb_from_scaled_discount,
             )
@@ -545,7 +545,7 @@ struct HctSolver:
     fn solve_to_int(hue_degrees: Float32, chroma: Float32, lstar: Float32) -> Int:
         if chroma < 0.0001 or lstar < 0.0001 or lstar > 99.9999:
             return ColorUtils.argbFromLstar(lstar)
-        let hue_degrees2 = sanitizeDegreesDouble(hue_degrees)
+        let hue_degrees2 = MathUtils.sanitizeDegreesDouble(hue_degrees)
         let hue_radians = hue_degrees / 180 * MathPi
         let y = ColorUtils.yFromLstar(lstar)
         let exact_answer = Self.find_result_by_j(hue_radians, chroma, y)

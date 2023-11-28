@@ -1,6 +1,6 @@
 import math
 from lib.utils.color_utils import ColorUtils
-from lib.utils.math_utils import signum
+from lib.utils.math_utils import MathUtils
 from lib.hct.viewing_conditions import ViewingConditions
 
 alias MathPi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273
@@ -75,9 +75,9 @@ struct Cam16:
       let gAF =float_pow(viewing_conditions.fl * math.abs(gD) / 100.0, 0.42);
       let bAF = float_pow(viewing_conditions.fl * math.abs(bD) / 100.0, 0.42)
 
-      let rA = signum(rD) * 400.0 * rAF / (rAF + 27.13);
-      let gA = signum(gD) * 400.0 * gAF / (gAF + 27.13);
-      let bA = signum(bD) * 400.0 * bAF / (bAF + 27.13);
+      let rA = MathUtils.signum(rD) * 400.0 * rAF / (rAF + 27.13);
+      let gA = MathUtils.signum(gD) * 400.0 * gAF / (gAF + 27.13);
+      let bA = MathUtils.signum(bD) * 400.0 * bAF / (bAF + 27.13);
 
       # redness-greenness
       let a = (11.0 * rA + -12.0 * gA + bA) / 11.0;
@@ -208,15 +208,15 @@ struct Cam16:
       let g_a: Float32 = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0
       let b_a: Float32 = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0
       let r_c_base: Float32 = math.max(0, (27.13 * math.abs(r_a)) / (400 - math.abs(r_a)))
-      let r_c: Float32 = signum(r_a) * (100.0 / viewing_conditions.fl) * float_pow(
+      let r_c: Float32 = MathUtils.signum(r_a) * (100.0 / viewing_conditions.fl) * float_pow(
           r_c_base, 1.0 / 0.42
       )
       let g_c_base: Float32 = math.max(0, (27.13 * math.abs(g_a)) / (400 - math.abs(g_a)))
-      let g_c: Float32 = signum(g_a) * (100.0 / viewing_conditions.fl) * float_pow(
+      let g_c: Float32 = MathUtils.signum(g_a) * (100.0 / viewing_conditions.fl) * float_pow(
           g_c_base, 1.0 / 0.42
       )
       let b_c_base: Float32 = math.max(0, (27.13 * math.abs(b_a)) / (400 - math.abs(b_a)))
-      let b_c: Float32 = signum(b_a) * (100.0 / viewing_conditions.fl) * float_pow(
+      let b_c: Float32 = MathUtils.signum(b_a) * (100.0 / viewing_conditions.fl) * float_pow(
           b_c_base, 1.0 / 0.42
       )
       let r_f: Float32 = r_c / viewing_conditions.rgbD[0]

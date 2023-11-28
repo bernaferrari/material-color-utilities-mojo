@@ -1,7 +1,7 @@
 from math import pow, exp, sqrt, min, max
 
 from lib.utils.color_utils import ColorUtils
-from lib.utils.math_utils import lerp
+from lib.utils.math_utils import MathUtils
 
 alias MathPi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273
 
@@ -86,9 +86,9 @@ struct ViewingConditions:
         )
 
         let f = 0.8 + (surround / 10.0)
-        let c = lerp(0.59, 0.69, ((f - 0.9) * 10.0)) if f >= 0.9 else lerp(
-            0.525, 0.59, ((f - 0.8) * 10.0)
-        )
+        let c = MathUtils.lerp(
+            0.59, 0.69, ((f - 0.9) * 10.0)
+        ) if f >= 0.9 else MathUtils.lerp(0.525, 0.59, ((f - 0.8) * 10.0))
 
         let expCalculation = exp[DType.float32, 1](
             (-adaptingLuminanceLocal - 42.0) / 92.0

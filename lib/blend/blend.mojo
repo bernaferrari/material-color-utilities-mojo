@@ -2,11 +2,7 @@ import math
 from lib.hct.cam16 import Cam16
 from lib.hct.hct import Hct
 from lib.utils import ColorUtils
-from lib.utils.math_utils import (
-    sanitizeDegreesDouble,
-    differenceDegrees,
-    rotationDirection,
-)
+from lib.utils.math_utils import MathUtils
 
 
 struct Blend:
@@ -14,11 +10,11 @@ struct Blend:
     fn harmonize(design_color: Int, source_color: Int) -> Int:
         let from_hct = Hct.from_int(design_color)
         let to_hct = Hct.from_int(source_color)
-        let difference_degrees = differenceDegrees(from_hct.hue, to_hct.hue)
+        let difference_degrees = MathUtils.differenceDegrees(from_hct.hue, to_hct.hue)
         let rotation_degrees = math.min(difference_degrees * 0.5, 15.0)
-        let output_hue = sanitizeDegreesDouble(
+        let output_hue = MathUtils.sanitizeDegreesDouble(
             from_hct.hue
-            + rotation_degrees * rotationDirection(from_hct.hue, to_hct.hue)
+            + rotation_degrees * MathUtils.rotationDirection(from_hct.hue, to_hct.hue)
         )
         let intReturnValue = Hct.to_int2(
             Hct.from_hct(output_hue, from_hct.chroma, from_hct.tone)

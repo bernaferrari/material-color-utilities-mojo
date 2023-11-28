@@ -1,13 +1,13 @@
 import math
 from lib.utils.color_utils import ColorUtils
-from lib.utils.math_utils import clampDouble
+from lib.utils.math_utils import MathUtils
 
 
 struct Contrast:
     @staticmethod
     fn ratio_of_tones(tone_a: Float32, tone_b: Float32) -> Float32:
-        let tone_a2 = clampDouble(tone_a, 0.0, 100.0)
-        let tone_b2 = clampDouble(tone_b, 0.0, 100.0)
+        let tone_a2 = MathUtils.clampDouble(tone_a, 0.0, 100.0)
+        let tone_b2 = MathUtils.clampDouble(tone_b, 0.0, 100.0)
         let y_a = ColorUtils.yFromLstar(tone_a2)
         let y_b = ColorUtils.yFromLstar(tone_b2)
         return (math.max(y_a, y_b) + 5.0) / (math.min(y_a, y_b) + 5.0)

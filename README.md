@@ -14,7 +14,7 @@ This is what is implemented right now. The most complex, low level stuff are mos
 
 - ✅ dislike
 
-- [ ] dynamic color
+- [ ] dynamic color (requires enum)
 
 - ✅ hct
 
