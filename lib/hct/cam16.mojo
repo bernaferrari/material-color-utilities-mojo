@@ -1,241 +1,328 @@
-import math
+import std.math as math
+from std.utils import StaticTuple
 from lib.utils.color_utils import ColorUtils
 from lib.utils.math_utils import MathUtils
 from lib.hct.viewing_conditions import ViewingConditions
 
-alias MathPi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273
+comptime MathPi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273
+
 
 struct Cam16:
-    var hue: Float32
-    var chroma: Float32
-    var j: Float32
-    var q: Float32
-    var m: Float32
-    var s: Float32
-    var jstar: Float32
-    var astar: Float32
-    var bstar: Float32
+    var hue: Float64
+    var chroma: Float64
+    var j: Float64
+    var q: Float64
+    var m: Float64
+    var s: Float64
+    var jstar: Float64
+    var astar: Float64
+    var bstar: Float64
 
-  fn __init__(
-    inout self,
-      hue: Float32,
-      chroma: Float32,
-      j: Float32,
-      q: Float32,
-      m: Float32,
-      s: Float32,
-      jstar: Float32,
-      astar: Float32,
-      bstar: Float32,
-  ):
-      self.hue = hue
-      self.chroma = chroma
-      self.j = j
-      self.q = q
-      self.m = m
-      self.s = s
-      self.jstar = jstar
-      self.astar = astar
-      self.bstar = bstar
+    def __init__(
+        out self,
+        hue: Float64,
+        chroma: Float64,
+        j: Float64,
+        q: Float64,
+        m: Float64,
+        s: Float64,
+        jstar: Float64,
+        astar: Float64,
+        bstar: Float64,
+    ):
+        self.hue = hue
+        self.chroma = chroma
+        self.j = j
+        self.q = q
+        self.m = m
+        self.s = s
+        self.jstar = jstar
+        self.astar = astar
+        self.bstar = bstar
 
-  fn distance(cam16_1: Cam16, cam16_2: Cam16) -> Float32:
-      let dJ: Float32 = cam16_1.jstar - cam16_2.jstar
-      let dA: Float32 = cam16_1.astar - cam16_2.astar
-      let dB: Float32 = cam16_1.bstar - cam16_2.bstar
-      let dEPrime: Float32 = math.sqrt(dJ * dJ + dA * dA + dB * dB)
-      let dE: Float32 = 1.41 * float_pow(dEPrime, 0.63)
-      return dE
+    def distance(cam16_1: Cam16, cam16_2: Cam16) -> Float64:
+        var dJ: Float64 = cam16_1.jstar - cam16_2.jstar
+        var dA: Float64 = cam16_1.astar - cam16_2.astar
+        var dB: Float64 = cam16_1.bstar - cam16_2.bstar
+        var dEPrime: Float64 = math.sqrt(dJ * dJ + dA * dA + dB * dB)
+        var dE: Float64 = 1.41 * float_pow(dEPrime, 0.63)
+        return dE
 
-  @staticmethod
-  fn from_int(argb: Int) -> Cam16:
-      return Self.from_int_in_viewing_conditions(argb, ViewingConditions.srgb())
+    @staticmethod
+    def from_int(argb: Int) -> Cam16:
+        return Self.from_int_in_viewing_conditions(
+            argb, ViewingConditions.srgb()
+        )
 
-  @staticmethod
-  fn from_int_in_viewing_conditions(argb: Int, viewing_conditions: ViewingConditions
-  ) -> Cam16:
-      let xyz = ColorUtils.xyzFromArgb(argb)
-      let x: Float32 = xyz[0]
-      let y: Float32 = xyz[1]
-      let z: Float32 = xyz[2]
-      return Self.from_xyz_in_viewing_conditions(x, y, z, viewing_conditions)
+    @staticmethod
+    def fromInt(argb: Int) -> Cam16:
+        return Self.from_int(argb)
 
-  @staticmethod
-  fn from_xyz_in_viewing_conditions(
-      x: Float32, y: Float32, z: Float32, viewing_conditions: ViewingConditions
-  ) -> Cam16:
-      let rC: Float32 = 0.401288 * x + 0.650173 * y - 0.051461 * z
-      let gC: Float32 = -0.250268 * x + 1.204414 * y + 0.045854 * z
-      let bC: Float32 = -0.002079 * x + 0.048952 * y + 0.953127 * z      
+    @staticmethod
+    def from_int_in_viewing_conditions(
+        argb: Int, viewing_conditions: ViewingConditions
+    ) -> Cam16:
+        var xyz = ColorUtils.xyzFromArgb(argb)
+        var x: Float64 = xyz[0]
+        var y: Float64 = xyz[1]
+        var z: Float64 = xyz[2]
+        return Self.from_xyz_in_viewing_conditions(x, y, z, viewing_conditions)
 
-      let rD: Float32 = viewing_conditions.rgbD[0] * rC
-      let gD: Float32 = viewing_conditions.rgbD[1] * gC
-      let bD: Float32 = viewing_conditions.rgbD[2] * bC
+    @staticmethod
+    def fromIntInViewingConditions(
+        argb: Int, viewing_conditions: ViewingConditions
+    ) -> Cam16:
+        return Self.from_int_in_viewing_conditions(argb, viewing_conditions)
 
-      let rAF =  float_pow(viewing_conditions.fl * math.abs(rD) / 100.0, 0.42);
-      let gAF =float_pow(viewing_conditions.fl * math.abs(gD) / 100.0, 0.42);
-      let bAF = float_pow(viewing_conditions.fl * math.abs(bD) / 100.0, 0.42)
+    @staticmethod
+    def from_xyz_in_viewing_conditions(
+        x: Float64,
+        y: Float64,
+        z: Float64,
+        viewing_conditions: ViewingConditions,
+    ) -> Cam16:
+        var rC: Float64 = 0.401288 * x + 0.650173 * y - 0.051461 * z
+        var gC: Float64 = -0.250268 * x + 1.204414 * y + 0.045854 * z
+        var bC: Float64 = -0.002079 * x + 0.048952 * y + 0.953127 * z
 
-      let rA = MathUtils.signum(rD) * 400.0 * rAF / (rAF + 27.13);
-      let gA = MathUtils.signum(gD) * 400.0 * gAF / (gAF + 27.13);
-      let bA = MathUtils.signum(bD) * 400.0 * bAF / (bAF + 27.13);
+        var rD: Float64 = viewing_conditions.rgbD[0] * rC
+        var gD: Float64 = viewing_conditions.rgbD[1] * gC
+        var bD: Float64 = viewing_conditions.rgbD[2] * bC
 
-      # redness-greenness
-      let a = (11.0 * rA + -12.0 * gA + bA) / 11.0;
-      # yellowness-blueness
-      let b = (rA + gA - 2.0 * bA) / 9.0;
+        var rAF = float_pow(viewing_conditions.fl * math.abs(rD) / 100.0, 0.42)
+        var gAF = float_pow(viewing_conditions.fl * math.abs(gD) / 100.0, 0.42)
+        var bAF = float_pow(viewing_conditions.fl * math.abs(bD) / 100.0, 0.42)
 
-      # auxiliary components
-      let u = (20.0 * rA + 20.0 * gA + 21.0 * bA) / 20.0;
-      let p2 = (40.0 * rA + 20.0 * gA + bA) / 20.0;
+        var rA = MathUtils.signum(rD) * 400.0 * rAF / (rAF + 27.13)
+        var gA = MathUtils.signum(gD) * 400.0 * gAF / (gAF + 27.13)
+        var bA = MathUtils.signum(bD) * 400.0 * bAF / (bAF + 27.13)
 
-      let atan2_b_a: Float32 = math.atan2(b, a)
-      let atan_degrees: Float32 = atan2_b_a * 180.0 / MathPi
-      let hue: Float32 = atan_degrees if atan_degrees >= 0 else atan_degrees + 360.0
-      let hue_radians: Float32 = hue * MathPi / 180.0
+        # redness-greenness
+        var a = (11.0 * rA + -12.0 * gA + bA) / 11.0
+        # yellowness-blueness
+        var b = (rA + gA - 2.0 * bA) / 9.0
 
-      let ac: Float32 = p2 * viewing_conditions.nbb
-      let j: Float32 = 100.0 * math.pow(
-          ac / viewing_conditions.aw, viewing_conditions.c * viewing_conditions.z
-      )
-      let q: Float32 = (4.0 / viewing_conditions.c) * math.sqrt(j / 100.0) * (
-          viewing_conditions.aw + 4.0
-      ) * viewing_conditions.fLRoot
+        # auxiliary components
+        var u = (20.0 * rA + 20.0 * gA + 21.0 * bA) / 20.0
+        var p2 = (40.0 * rA + 20.0 * gA + bA) / 20.0
 
-      let hue_prime: Float32 = hue if hue >= 20.14 else hue + 360
-      let e_hue =
-        (1.0 / 4.0) * (math.cos(hue_prime * MathPi / 180.0 + 2.0) + 3.8);
-      let p1: Float32 = 50000.0 / 13.0 * e_hue * viewing_conditions.nC * viewing_conditions.ncb
-      let t: Float32 = p1 * math.sqrt(a * a + b * b) / (u + 0.305)
+        var atan2_b_a: Float64 = math.atan2(b, a)
+        var atan_degrees: Float64 = atan2_b_a * 180.0 / MathPi
+        var hue: Float64 = (
+            atan_degrees if atan_degrees >= 0 else atan_degrees + 360.0
+        )
+        var hue_radians: Float64 = hue * MathPi / 180.0
 
-      let alpha = float_pow(t, 0.9) *
-        float_pow(
+        var ac: Float64 = p2 * viewing_conditions.nbb
+        var j: Float64 = 100.0 * math.pow(
+            ac / viewing_conditions.aw,
+            viewing_conditions.c * viewing_conditions.z,
+        )
+        var q: Float64 = (
+            (4.0 / viewing_conditions.c)
+            * math.sqrt(j / 100.0)
+            * (viewing_conditions.aw + 4.0)
+            * viewing_conditions.fLRoot
+        )
+
+        var hue_prime: Float64 = hue if hue >= 20.14 else hue + 360
+        var e_hue = (1.0 / 4.0) * (
+            math.cos(hue_prime * MathPi / 180.0 + 2.0) + 3.8
+        )
+        var p1: Float64 = (
+            50000.0
+            / 13.0
+            * e_hue
+            * viewing_conditions.nC
+            * viewing_conditions.ncb
+        )
+        var t: Float64 = p1 * math.sqrt(a * a + b * b) / (u + 0.305)
+
+        var alpha = float_pow(t, 0.9) * float_pow(
             1.64 - float_pow(0.29, viewing_conditions.backgroundYTowhitePointY),
-            0.73);
+            0.73,
+        )
 
-      let c: Float32 = alpha * math.sqrt(j / 100.0)
-      let m: Float32 = c * viewing_conditions.fLRoot
-      let s: Float32 = 50.0 * math.sqrt(
-          (alpha * viewing_conditions.c) / (viewing_conditions.aw + 4.0)
-      )
-      let jstar: Float32 = (1.0 + 100.0 * 0.007) * j / (1.0 + 0.007 * j)
-      let mstar: Float32 = math.log(1.0 + 0.0228 * m) / 0.0228
-      let astar: Float32 = mstar * math.cos(hue_radians)
-      let bstar: Float32 = mstar * math.sin(hue_radians)
+        var c: Float64 = alpha * math.sqrt(j / 100.0)
+        var m: Float64 = c * viewing_conditions.fLRoot
+        var s: Float64 = 50.0 * math.sqrt(
+            (alpha * viewing_conditions.c) / (viewing_conditions.aw + 4.0)
+        )
+        var jstar: Float64 = (1.0 + 100.0 * 0.007) * j / (1.0 + 0.007 * j)
+        var mstar: Float64 = math.log(1.0 + 0.0228 * m) / 0.0228
+        var astar: Float64 = mstar * math.cos(hue_radians)
+        var bstar: Float64 = mstar * math.sin(hue_radians)
 
-      return Cam16(hue, c, j, q, m, s, jstar, astar, bstar)
+        return Cam16(hue, c, j, q, m, s, jstar, astar, bstar)
 
-  @staticmethod
-  fn fromJch(j: Float32, c: Float32, h: Float32) -> Cam16:
-    return Self.fromJchInViewingConditions(j, c, h, ViewingConditions.srgb())
+    @staticmethod
+    def fromXyzInViewingConditions(
+        x: Float64,
+        y: Float64,
+        z: Float64,
+        viewing_conditions: ViewingConditions,
+    ) -> Cam16:
+        return Self.from_xyz_in_viewing_conditions(x, y, z, viewing_conditions)
 
-  @staticmethod
-  fn fromJchInViewingConditions(
-    J: Float32, C: Float32, h: Float32, viewingConditions: ViewingConditions
-  ) -> Cam16:
-    let Q =
-      (4.0 / viewingConditions.c) * math.sqrt(J / 100.0) * (viewingConditions.aw + 4.0)
-      * (viewingConditions.fLRoot)
-    let M = C * viewingConditions.fLRoot
-    let alpha = C / math.sqrt(J / 100.0)
-    let s = 50.0 * math.sqrt((alpha * viewingConditions.c) / (viewingConditions.aw + 4.0))
+    @staticmethod
+    def fromJch(j: Float64, c: Float64, h: Float64) -> Cam16:
+        return Self.fromJchInViewingConditions(
+            j, c, h, ViewingConditions.srgb()
+        )
 
-    let hueRadians = h * MathPi / 180
-    let jstar = (1.0 + 100.0 * 0.007) * J / (1.0 + 0.007 * J)
-    let mstar = 1.0 / 0.0228 * math.log(1.0 + 0.0228 * M)
-    let astar = mstar * math.cos(hueRadians)
-    let bstar = mstar * math.sin(hueRadians)
-    return Cam16(h, C, J, Q, M, s, jstar, astar, bstar)
+    @staticmethod
+    def fromJchInViewingConditions(
+        J: Float64, C: Float64, h: Float64, viewingConditions: ViewingConditions
+    ) -> Cam16:
+        var Q = (
+            (4.0 / viewingConditions.c)
+            * math.sqrt(J / 100.0)
+            * (viewingConditions.aw + 4.0)
+            * viewingConditions.fLRoot
+        )
+        var M = C * viewingConditions.fLRoot
+        var alpha = C / math.sqrt(J / 100.0)
+        var s = 50.0 * math.sqrt(
+            (alpha * viewingConditions.c) / (viewingConditions.aw + 4.0)
+        )
 
-  # Create a CAM16 color from CAM16-UCS coordinates [jstar], [astar], [bstar].
-  # assuming the color was viewed in default viewing conditions.
-  @staticmethod
-  fn fromUcs(jstar: Float32, astar: Float32, bstar: Float32) -> Cam16:
-    return Self.fromUcsInViewingConditions(jstar, astar, bstar, ViewingConditions.standard())
+        var hueRadians = h * MathPi / 180
+        var jstar = (1.0 + 100.0 * 0.007) * J / (1.0 + 0.007 * J)
+        var mstar = 1.0 / 0.0228 * math.log(1.0 + 0.0228 * M)
+        var astar = mstar * math.cos(hueRadians)
+        var bstar = mstar * math.sin(hueRadians)
+        return Cam16(h, C, J, Q, M, s, jstar, astar, bstar)
 
-  # Create a CAM16 color from CAM16-UCS coordinates [jstar], [astar], [bstar].
-  # in [viewingConditions].
-  @staticmethod
-  fn fromUcsInViewingConditions(
-    jstar: Float32, astar: Float32, bstar: Float32, viewingConditions: ViewingConditions
-  ) -> Cam16:
-    let a = astar
-    let b = bstar
-    let m = math.sqrt(a * a + b * b)
-    let M = (math.exp(m * 0.0228) - 1.0) / 0.0228
-    let c = M / viewingConditions.fLRoot
-    var h = math.atan2(b, a) * (180.0 / MathPi)
-    if h < 0.0:
-      h += 360.0
-    let j = jstar / (1 - (jstar - 100) * 0.007)
+    # Create a CAM16 color from CAM16-UCS coordinates [jstar], [astar], [bstar].
+    # assuming the color was viewed in default viewing conditions.
+    @staticmethod
+    def fromUcs(jstar: Float64, astar: Float64, bstar: Float64) -> Cam16:
+        return Self.fromUcsInViewingConditions(
+            jstar, astar, bstar, ViewingConditions.standard()
+        )
 
-    return Self.fromJchInViewingConditions(j, c, h, viewingConditions)
+    # Create a CAM16 color from CAM16-UCS coordinates [jstar], [astar], [bstar].
+    # in [viewingConditions].
+    @staticmethod
+    def fromUcsInViewingConditions(
+        jstar: Float64,
+        astar: Float64,
+        bstar: Float64,
+        viewingConditions: ViewingConditions,
+    ) -> Cam16:
+        var a = astar
+        var b = bstar
+        var m = math.sqrt(a * a + b * b)
+        var M = (math.exp(m * 0.0228) - 1.0) / 0.0228
+        var c = M / viewingConditions.fLRoot
+        var h = math.atan2(b, a) * (180.0 / MathPi)
+        if h < 0.0:
+            h += 360.0
+        var j = jstar / (1 - (jstar - 100) * 0.007)
 
-  fn to_int(inout self: Cam16) -> Int:
-      return self.viewed(self, ViewingConditions.srgb())
+        return Self.fromJchInViewingConditions(j, c, h, viewingConditions)
 
-  fn viewed(inout self, cam16: Cam16, viewing_conditions: ViewingConditions) -> Int:
-      let xyz: StaticTuple[3, Float32] = Self.xyz_in_viewing_conditions(cam16, viewing_conditions)
-      return ColorUtils.argbFromXyz(xyz[0], xyz[1], xyz[2])
+    def to_int(self) -> Int:
+        return self.viewed(ViewingConditions.srgb())
 
-  fn xyz_in_viewing_conditions(
-      cam16: Cam16, viewing_conditions: ViewingConditions
-  ) -> StaticTuple[3, Float32]:
-      let alpha: Float32 = cam16.chroma / math.sqrt(cam16.j / 100.0) if (
-          cam16.chroma != 0.0 and cam16.j != 0.0
-      ) else 0.0
+    def toInt(self) -> Int:
+        return self.to_int()
 
-      let t: Float32 = float_pow(
-          alpha / (1.64 - float_pow(0.29, viewing_conditions.backgroundYTowhitePointY)),
-          1.0 / 0.9,
-      )
-      let h_rad: Float32 = cam16.hue * MathPi / 180.0
-      let e_hue = (math.cos(h_rad + 2.0) + 3.8) / 4.0
-      let ac: Float32 = viewing_conditions.aw * math.pow(
-          cam16.j / 100.0, 1.0 / (viewing_conditions.c * viewing_conditions.z)
-      )
-      let p1: Float32 = e_hue * (
-          50000.0 / 13.0
-      ) * viewing_conditions.nC * viewing_conditions.ncb
-      let p2: Float32 = ac / viewing_conditions.nbb
-      let h_sin: Float32 = math.sin(h_rad)
-      let h_cos: Float32 = math.cos(h_rad)
-      let gamma: Float32 = 23.0 * (p2 + 0.305) * t / (
-          23.0 * p1 + 11 * t * h_cos + 108.0 * t * h_sin
-      )
-      let a: Float32 = gamma * h_cos
-      let b: Float32 = gamma * h_sin
-      let r_a: Float32 = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0
-      let g_a: Float32 = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0
-      let b_a: Float32 = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0
-      let r_c_base: Float32 = math.max(0, (27.13 * math.abs(r_a)) / (400 - math.abs(r_a)))
-      let r_c: Float32 = MathUtils.signum(r_a) * (100.0 / viewing_conditions.fl) * float_pow(
-          r_c_base, 1.0 / 0.42
-      )
-      let g_c_base: Float32 = math.max(0, (27.13 * math.abs(g_a)) / (400 - math.abs(g_a)))
-      let g_c: Float32 = MathUtils.signum(g_a) * (100.0 / viewing_conditions.fl) * float_pow(
-          g_c_base, 1.0 / 0.42
-      )
-      let b_c_base: Float32 = math.max(0, (27.13 * math.abs(b_a)) / (400 - math.abs(b_a)))
-      let b_c: Float32 = MathUtils.signum(b_a) * (100.0 / viewing_conditions.fl) * float_pow(
-          b_c_base, 1.0 / 0.42
-      )
+    def viewed(self, viewing_conditions: ViewingConditions) -> Int:
+        var xyz: StaticTuple[Float64, 3] = Self.xyz_in_viewing_conditions(
+            self, viewing_conditions
+        )
+        return ColorUtils.argbFromXyz(xyz[0], xyz[1], xyz[2])
+
+    def xyz_in_viewing_conditions(
+        cam16: Cam16, viewing_conditions: ViewingConditions
+    ) -> StaticTuple[Float64, 3]:
+        var alpha: Float64 = (
+            cam16.chroma
+            / math.sqrt(cam16.j / 100.0) if (
+                cam16.chroma != 0.0 and cam16.j != 0.0
+            ) else 0.0
+        )
+
+        var t: Float64 = float_pow(
+            alpha
+            / float_pow(
+                1.64
+                - float_pow(0.29, viewing_conditions.backgroundYTowhitePointY),
+                0.73,
+            ),
+            1.0 / 0.9,
+        )
+        var h_rad: Float64 = cam16.hue * MathPi / 180.0
+        var e_hue = (math.cos(h_rad + 2.0) + 3.8) / 4.0
+        var ac: Float64 = viewing_conditions.aw * math.pow(
+            cam16.j / 100.0, 1.0 / (viewing_conditions.c * viewing_conditions.z)
+        )
+        var p1: Float64 = (
+            e_hue
+            * (50000.0 / 13.0)
+            * viewing_conditions.nC
+            * viewing_conditions.ncb
+        )
+        var p2: Float64 = ac / viewing_conditions.nbb
+        var h_sin: Float64 = math.sin(h_rad)
+        var h_cos: Float64 = math.cos(h_rad)
+        var gamma: Float64 = (
+            23.0
+            * (p2 + 0.305)
+            * t
+            / (23.0 * p1 + 11 * t * h_cos + 108.0 * t * h_sin)
+        )
+        var a: Float64 = gamma * h_cos
+        var b: Float64 = gamma * h_sin
+        var r_a: Float64 = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0
+        var g_a: Float64 = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0
+        var b_a: Float64 = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0
+        var r_c_base: Float64 = math.max(
+            0.0, (27.13 * math.abs(r_a)) / (400.0 - math.abs(r_a))
+        )
+        var r_c: Float64 = (
+            MathUtils.signum(r_a)
+            * (100.0 / viewing_conditions.fl)
+            * float_pow(r_c_base, 1.0 / 0.42)
+        )
+        var g_c_base: Float64 = math.max(
+            0.0, (27.13 * math.abs(g_a)) / (400.0 - math.abs(g_a))
+        )
+        var g_c: Float64 = (
+            MathUtils.signum(g_a)
+            * (100.0 / viewing_conditions.fl)
+            * float_pow(g_c_base, 1.0 / 0.42)
+        )
+        var b_c_base: Float64 = math.max(
+            0.0, (27.13 * math.abs(b_a)) / (400.0 - math.abs(b_a))
+        )
+        var b_c: Float64 = (
+            MathUtils.signum(b_a)
+            * (100.0 / viewing_conditions.fl)
+            * float_pow(b_c_base, 1.0 / 0.42)
+        )
+
+        # Optimized into SIMD:
+        var r_f: Float64 = r_c / viewing_conditions.rgbD[0]
+        var g_f: Float64 = g_c / viewing_conditions.rgbD[1]
+        var b_f: Float64 = b_c / viewing_conditions.rgbD[2]
+
+        #   var simd_f = SIMD[DType.float64, 3](r_c, g_c, b_c) / SIMD[DType.float64, 3](viewing_conditions.rgbD[0], viewing_conditions.rgbD[1], viewing_conditions.rgbD[2])
+        #   var r_f = simd_f[0]
+        #   var g_f = simd_f[1]
+        #   var b_f = simd_f[2]
+
+        var x: Float64 = 1.86206786 * r_f - 1.01125463 * g_f + 0.14918677 * b_f
+        var y: Float64 = 0.38752654 * r_f + 0.62144744 * g_f - 0.00897398 * b_f
+        var z: Float64 = -0.01584150 * r_f - 0.03412294 * g_f + 1.04996444 * b_f
+        return StaticTuple[Float64, 3](x, y, z)
+
+    def xyzInViewingConditions(
+        self, viewing_conditions: ViewingConditions
+    ) -> StaticTuple[Float64, 3]:
+        return Self.xyz_in_viewing_conditions(self, viewing_conditions)
 
 
-     # Optimized into SIMD:
-      let r_f: Float32 = r_c / viewing_conditions.rgbD[0]
-      let g_f: Float32 = g_c / viewing_conditions.rgbD[1]
-      let b_f: Float32 = b_c / viewing_conditions.rgbD[2]
-
-    #   let simd_f = SIMD[DType.float32, 3](r_c, g_c, b_c) / SIMD[DType.float32, 3](viewing_conditions.rgbD[0], viewing_conditions.rgbD[1], viewing_conditions.rgbD[2])
-    #   let r_f = simd_f[0]
-    #   let g_f = simd_f[1]
-    #   let b_f = simd_f[2]
-
-      let x: Float32 = 1.86206786 * r_f - 1.01125463 * g_f + 0.14918677 * b_f
-      let y: Float32 = 0.38752654 * r_f + 0.62144744 * g_f - 0.00897398 * b_f
-      let z: Float32 = -0.01584150 * r_f - 0.03412294 * g_f + 1.04996444 * b_f
-      return StaticTuple[3, Float32](x, y, z)
-
-
-fn float_pow(base: Float32, exponent: Float32) -> Float32:
-    return base ** Float32(exponent)
+def float_pow(base: Float64, exponent: Float64) -> Float64:
+    return base ** Float64(exponent)

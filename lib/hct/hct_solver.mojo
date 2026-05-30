@@ -1,4 +1,5 @@
-import math
+import std.math as math
+from std.utils import StaticTuple
 
 from lib.hct.viewing_conditions import ViewingConditions
 
@@ -6,37 +7,41 @@ from lib.hct.cam16 import Cam16
 from lib.utils.color_utils import ColorUtils
 from lib.utils.math_utils import MathUtils
 
-alias MathPi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273
+comptime MathPi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273
 
 
 struct HctSolver:
-    alias scaled_discount_from_linrgb = StaticTuple[3, StaticTuple[3, Float32]](
-        StaticTuple[3, Float32](
+    comptime scaled_discount_from_linrgb = StaticTuple[
+        StaticTuple[Float64, 3], 3
+    ](
+        StaticTuple[Float64, 3](
             0.001200833568784504, 0.002389694492170889, 0.0002795742885861124
         ),
-        StaticTuple[3, Float32](
+        StaticTuple[Float64, 3](
             0.0005891086651375999, 0.0029785502573438758, 0.0003270666104008398
         ),
-        StaticTuple[3, Float32](
+        StaticTuple[Float64, 3](
             0.00010146692491640572, 0.0005364214359186694, 0.0032979401770712076
         ),
     )
 
-    alias linrgb_from_scaled_discount = StaticTuple[3, StaticTuple[3, Float32]](
-        StaticTuple[3, Float32](
+    comptime linrgb_from_scaled_discount = StaticTuple[
+        StaticTuple[Float64, 3], 3
+    ](
+        StaticTuple[Float64, 3](
             1373.2198709594231, -1100.4251190754821, -7.278681089101213
         ),
-        StaticTuple[3, Float32](
+        StaticTuple[Float64, 3](
             -271.815969077903, 559.6580465940733, -32.46047482791194
         ),
-        StaticTuple[3, Float32](
+        StaticTuple[Float64, 3](
             1.9622899599665666, -57.173814538844006, 308.7233197812385
         ),
     )
 
-    alias y_from_linrgb = StaticTuple[3, Float32](0.2126, 0.7152, 0.0722)
+    comptime y_from_linrgb = StaticTuple[Float64, 3](0.2126, 0.7152, 0.0722)
 
-    alias critical_planes = StaticTuple[255, Float32](
+    comptime critical_planes = StaticTuple[Float64, 255](
         0.015176349177441876,
         0.045529047532325624,
         0.07588174588720938,
@@ -295,13 +300,13 @@ struct HctSolver:
     )
 
     @staticmethod
-    fn sanitize_radians(angle: Float32) -> Float32:
+    def sanitize_radians(angle: Float64) -> Float64:
         return (angle + MathPi * 8) % (MathPi * 2)
 
     @staticmethod
-    fn true_delinearized(rgb_component: Float32) -> Float32:
-        let normalized = rgb_component / 100.0
-        let delinearized: Float32
+    def true_delinearized(rgb_component: Float64) -> Float64:
+        var normalized = rgb_component / 100.0
+        var delinearized: Float64
         if normalized <= 0.0031308:
             delinearized = normalized * 12.92
         else:
@@ -309,101 +314,105 @@ struct HctSolver:
         return delinearized * 255.0
 
     @staticmethod
-    fn chromatic_adaptation(component: Float32) -> Float32:
-        let af = (math.abs(component) ** 0.42)
+    def chromatic_adaptation(component: Float64) -> Float64:
+        var af = math.abs(component) ** 0.42
         return MathUtils.signum(component) * 400.0 * af / (af + 27.13)
 
     @staticmethod
-    fn hue_of(linrgb: StaticTuple[3, Float32]) -> Float32:
-        let scaled_discount = MathUtils.matrixMultiply(linrgb, Self.scaled_discount_from_linrgb)
-        let rA = Self.chromatic_adaptation(scaled_discount[0])
-        let gA = Self.chromatic_adaptation(scaled_discount[1])
-        let bA = Self.chromatic_adaptation(scaled_discount[2])
-        let a = (11.0 * rA + -12.0 * gA + bA) / 11.0
-        let b = (rA + gA - 2.0 * bA) / 9.0
+    def hue_of(linrgb: StaticTuple[Float64, 3]) -> Float64:
+        var scaled_discount = MathUtils.matrixMultiply(
+            linrgb, Self.scaled_discount_from_linrgb
+        )
+        var rA = Self.chromatic_adaptation(scaled_discount[0])
+        var gA = Self.chromatic_adaptation(scaled_discount[1])
+        var bA = Self.chromatic_adaptation(scaled_discount[2])
+        var a = (11.0 * rA + -12.0 * gA + bA) / 11.0
+        var b = (rA + gA - 2.0 * bA) / 9.0
         return math.atan2(b, a)
 
     @staticmethod
-    fn are_in_cyclic_order(a: Float32, b: Float32, c: Float32) -> Bool:
-        let deltaAB = Self.sanitize_radians(b - a)
-        let deltaAC = Self.sanitize_radians(c - a)
+    def are_in_cyclic_order(a: Float64, b: Float64, c: Float64) -> Bool:
+        var deltaAB = Self.sanitize_radians(b - a)
+        var deltaAC = Self.sanitize_radians(c - a)
         return deltaAB < deltaAC
 
     @staticmethod
-    fn intercept(source: Float32, mid: Float32, target: Float32) -> Float32:
+    def intercept(source: Float64, mid: Float64, target: Float64) -> Float64:
         return (mid - source) / (target - source)
 
     @staticmethod
-    fn lerp_point(
-        source: StaticTuple[3, Float32], t: Float32, target: StaticTuple[3, Float32]
-    ) -> StaticTuple[3, Float32]:
-        return StaticTuple[3, Float32](
+    def lerp_point(
+        source: StaticTuple[Float64, 3],
+        t: Float64,
+        target: StaticTuple[Float64, 3],
+    ) -> StaticTuple[Float64, 3]:
+        return StaticTuple[Float64, 3](
             source[0] + (target[0] - source[0]) * t,
             source[1] + (target[1] - source[1]) * t,
             source[2] + (target[2] - source[2]) * t,
         )
 
     @staticmethod
-    fn set_coordinate(
-        source: StaticTuple[3, Float32],
-        coordinate: Float32,
-        target: StaticTuple[3, Float32],
+    def set_coordinate(
+        source: StaticTuple[Float64, 3],
+        coordinate: Float64,
+        target: StaticTuple[Float64, 3],
         axis: Int,
-    ) -> StaticTuple[3, Float32]:
-        let t = Self.intercept(source[axis], coordinate, target[axis])
+    ) -> StaticTuple[Float64, 3]:
+        var t = Self.intercept(source[axis], coordinate, target[axis])
         return Self.lerp_point(source, t, target)
 
     @staticmethod
-    fn is_bounded(x: Float32) -> Bool:
+    def is_bounded(x: Float64) -> Bool:
         if x < 0.0 or x > 100.0:
             return False
         else:
             return True
 
     @staticmethod
-    fn nth_vertex(y: Float32, n: Int) -> StaticTuple[3, Float32]:
-        let kR = Self.y_from_linrgb[0]
-        let kG = Self.y_from_linrgb[1]
-        let kB = Self.y_from_linrgb[2]
-        let coordA = 0.0 if n % 4 <= 1 else 100.0
-        let coordB = 0.0 if n % 2 == 0 else 100.0
+    def nth_vertex(y: Float64, n: Int) -> StaticTuple[Float64, 3]:
+        var kR = Self.y_from_linrgb[0]
+        var kG = Self.y_from_linrgb[1]
+        var kB = Self.y_from_linrgb[2]
+        var coordA = 0.0 if n % 4 <= 1 else 100.0
+        var coordB = 0.0 if n % 2 == 0 else 100.0
         if n < 4:
-            let g = coordA
-            let b = coordB
-            let r = (y - g * kG - b * kB) / kR
-            return StaticTuple[3, Float32](r, g, b) if Self.is_bounded(
+            var g = coordA
+            var b = coordB
+            var r = (y - g * kG - b * kB) / kR
+            return StaticTuple[Float64, 3](r, g, b) if Self.is_bounded(
                 r
-            ) else StaticTuple[3, Float32](-1.0, -1.0, -1.0)
+            ) else StaticTuple[Float64, 3](-1.0, -1.0, -1.0)
         elif n < 8:
-            let b = coordA
-            let r = coordB
-            let g = (y - r * kR - b * kB) / kG
-            return StaticTuple[3, Float32](r, g, b) if Self.is_bounded(
+            var b = coordA
+            var r = coordB
+            var g = (y - r * kR - b * kB) / kG
+            return StaticTuple[Float64, 3](r, g, b) if Self.is_bounded(
                 g
-            ) else StaticTuple[3, Float32](-1.0, -1.0, -1.0)
+            ) else StaticTuple[Float64, 3](-1.0, -1.0, -1.0)
         else:
-            let r = coordA
-            let g = coordB
-            let b = (y - r * kR - g * kG) / kB
-            return StaticTuple[3, Float32](r, g, b) if Self.is_bounded(
+            var r = coordA
+            var g = coordB
+            var b = (y - r * kR - g * kG) / kB
+            return StaticTuple[Float64, 3](r, g, b) if Self.is_bounded(
                 b
-            ) else StaticTuple[3, Float32](-1.0, -1.0, -1.0)
+            ) else StaticTuple[Float64, 3](-1.0, -1.0, -1.0)
 
     @staticmethod
-    fn bisect_to_segment(
-        y: Float32, target_hue: Float32
-    ) -> StaticTuple[2, StaticTuple[3, Float32]]:
-        var left = StaticTuple[3, Float32](-1.0, -1.0, -1.0)
+    def bisect_to_segment(
+        y: Float64, target_hue: Float64
+    ) -> StaticTuple[StaticTuple[Float64, 3], 2]:
+        var left = StaticTuple[Float64, 3](-1.0, -1.0, -1.0)
         var right = left
-        var left_hue: Float32 = 0.0
-        var right_hue: Float32 = 0.0
+        var left_hue: Float64 = 0.0
+        var right_hue: Float64 = 0.0
         var initialized = False
         var uncut = True
         for n in range(12):
-            let mid = Self.nth_vertex(y, n)
+            var mid = Self.nth_vertex(y, n)
             if mid[0] < 0:
                 continue
-            let mid_hue = Self.hue_of(mid)
+            var mid_hue = Self.hue_of(mid)
             if not initialized:
                 left = mid
                 right = mid
@@ -419,34 +428,36 @@ struct HctSolver:
                 else:
                     left = mid
                     left_hue = mid_hue
-        return StaticTuple[2, StaticTuple[3, Float32]](left, right)
+        return StaticTuple[StaticTuple[Float64, 3], 2](left, right)
 
     @staticmethod
-    fn midpoint(
-        a: StaticTuple[3, Float32], b: StaticTuple[3, Float32]
-    ) -> StaticTuple[3, Float32]:
-        return StaticTuple[3, Float32](
+    def midpoint(
+        a: StaticTuple[Float64, 3], b: StaticTuple[Float64, 3]
+    ) -> StaticTuple[Float64, 3]:
+        return StaticTuple[Float64, 3](
             (a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2
         )
 
     @staticmethod
-    fn critical_plane_below(x: Float32) -> Int:
-        return (x - 0.5).to_int()
+    def critical_plane_below(x: Float64) -> Int:
+        return Int(x - 0.5)
 
     @staticmethod
-    fn critical_plane_above(x: Float32) -> Int:
-        return (x + 0.5).to_int()
+    def critical_plane_above(x: Float64) -> Int:
+        return Int(x + 0.5)
 
     @staticmethod
-    fn bisect_to_limit(y: Float32, target_hue: Float32) -> StaticTuple[3, Float32]:
-        let segment = Self.bisect_to_segment(y, target_hue)
+    def bisect_to_limit(
+        y: Float64, target_hue: Float64
+    ) -> StaticTuple[Float64, 3]:
+        var segment = Self.bisect_to_segment(y, target_hue)
         var left = segment[0]
         var left_hue = Self.hue_of(left)
         var right = segment[1]
         for axis in range(3):
             if left[axis] != right[axis]:
-                var l_plane = -1
-                var r_plane = 255
+                var l_plane: Int
+                var r_plane: Int
                 if left[axis] < right[axis]:
                     l_plane = Self.critical_plane_below(
                         Self.true_delinearized(left[axis])
@@ -461,15 +472,15 @@ struct HctSolver:
                     r_plane = Self.critical_plane_below(
                         Self.true_delinearized(right[axis])
                     )
-                for i in range(8):
+                for _ in range(8):
                     if math.abs(r_plane - l_plane) <= 1:
                         break
-                    let m_plane = ((l_plane + r_plane) / 2).to_int()
-                    let mid_plane_coordinate = Self.critical_planes[m_plane]
-                    let mid = Self.set_coordinate(
+                    var m_plane = (l_plane + r_plane) // 2
+                    var mid_plane_coordinate = Self.critical_planes[m_plane]
+                    var mid = Self.set_coordinate(
                         left, mid_plane_coordinate, right, axis
                     )
-                    let mid_hue = Self.hue_of(mid)
+                    var mid_hue = Self.hue_of(mid)
                     if Self.are_in_cyclic_order(left_hue, target_hue, mid_hue):
                         right = mid
                         r_plane = m_plane
@@ -480,84 +491,99 @@ struct HctSolver:
         return Self.midpoint(left, right)
 
     @staticmethod
-    fn inverse_chromatic_adaptation(adapted: Float32) -> Float32:
-        let adapted_abs = math.abs(adapted)
-        let base = math.max(0, 27.13 * adapted_abs / (400.0 - adapted_abs))
+    def inverse_chromatic_adaptation(adapted: Float64) -> Float64:
+        var adapted_abs = math.abs(adapted)
+        var base = math.max(0.0, 27.13 * adapted_abs / (400.0 - adapted_abs))
         return MathUtils.signum(adapted) * float_pow(base, 1.0 / 0.42)
 
     @staticmethod
-    fn find_result_by_j(hue_radians: Float32, chroma: Float32, y: Float32) -> Int:
+    def find_result_by_j(
+        hue_radians: Float64, chroma: Float64, y: Float64
+    ) -> Int:
         var j = math.sqrt(y) * 11.0
-        let viewing_conditions = ViewingConditions.standard()
-        let t_inner_coeff = 1 / float_pow(
-            1.64 - float_pow(0.29, viewing_conditions.backgroundYTowhitePointY), 0.73
+        var viewing_conditions = ViewingConditions.standard()
+        var t_inner_coeff = 1 / float_pow(
+            1.64 - float_pow(0.29, viewing_conditions.backgroundYTowhitePointY),
+            0.73,
         )
-        let e_hue = 0.25 * (math.cos(hue_radians + 2.0) + 3.8)
-        let p1 = e_hue * (
-            50000.0 / 13.0
-        ) * viewing_conditions.nC * viewing_conditions.ncb
-        let h_sin = math.sin(hue_radians)
-        let h_cos = math.cos(hue_radians)
+        var e_hue = 0.25 * (math.cos(hue_radians + 2.0) + 3.8)
+        var p1 = (
+            e_hue
+            * (50000.0 / 13.0)
+            * viewing_conditions.nC
+            * viewing_conditions.ncb
+        )
+        var h_sin = math.sin(hue_radians)
+        var h_cos = math.cos(hue_radians)
         for iteration_round in range(5):
-            let j_normalized = j / 100.0
-            let alpha = (
+            var j_normalized = j / 100.0
+            var alpha = (
                 chroma / math.sqrt(j_normalized)
             ) if chroma != 0.0 and j != 0.0 else 0.0
-            let t = float_pow(alpha * t_inner_coeff, 1.0 / 0.9)
-            let ac = viewing_conditions.aw * float_pow(
-                j_normalized, 1.0 / (viewing_conditions.c * viewing_conditions.z)
+            var t = float_pow(alpha * t_inner_coeff, 1.0 / 0.9)
+            var ac = viewing_conditions.aw * float_pow(
+                j_normalized,
+                1.0 / (viewing_conditions.c * viewing_conditions.z),
             )
-            let p2 = ac / viewing_conditions.nbb
-            let gamma = (
+            var p2 = ac / viewing_conditions.nbb
+            var gamma = (
                 23.0
                 * (p2 + 0.305)
                 * t
                 / (23.0 * p1 + 11 * t * h_cos + 108.0 * t * h_sin)
             )
-            let a = gamma * h_cos
-            let b = gamma * h_sin
-            let r_a = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0
-            let g_a = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0
-            let b_a = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0
-            let r_c_scaled = Self.inverse_chromatic_adaptation(r_a)
-            let g_c_scaled = Self.inverse_chromatic_adaptation(g_a)
-            let b_c_scaled = Self.inverse_chromatic_adaptation(b_a)
-            let linrgb = MathUtils.matrixMultiply(
-                StaticTuple[3, Float32](r_c_scaled, g_c_scaled, b_c_scaled),
+            var a = gamma * h_cos
+            var b = gamma * h_sin
+            var r_a = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0
+            var g_a = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0
+            var b_a = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0
+            var r_c_scaled = Self.inverse_chromatic_adaptation(r_a)
+            var g_c_scaled = Self.inverse_chromatic_adaptation(g_a)
+            var b_c_scaled = Self.inverse_chromatic_adaptation(b_a)
+            var linrgb = MathUtils.matrixMultiply(
+                StaticTuple[Float64, 3](r_c_scaled, g_c_scaled, b_c_scaled),
                 Self.linrgb_from_scaled_discount,
             )
             if linrgb[0] < 0 or linrgb[1] < 0 or linrgb[2] < 0:
                 return 0
-            let kR = Self.y_from_linrgb[0]
-            let kG = Self.y_from_linrgb[1]
-            let kB = Self.y_from_linrgb[2]
-            let fnj = kR * linrgb[0] + kG * linrgb[1] + kB * linrgb[2]
+            var kR = Self.y_from_linrgb[0]
+            var kG = Self.y_from_linrgb[1]
+            var kB = Self.y_from_linrgb[2]
+            var fnj = kR * linrgb[0] + kG * linrgb[1] + kB * linrgb[2]
             if fnj <= 0:
                 return 0
             if iteration_round == 4 or math.abs(fnj - y) < 0.002:
-                if linrgb[0] > 100.01 or linrgb[1] > 100.01 or linrgb[2] > 100.01:
+                if (
+                    linrgb[0] > 100.01
+                    or linrgb[1] > 100.01
+                    or linrgb[2] > 100.01
+                ):
                     return 0
                 return ColorUtils.argbFromLinrgb(linrgb)
             j = j - (fnj - y) * j / (2 * fnj)
         return 0
 
     @staticmethod
-    fn solve_to_int(hue_degrees: Float32, chroma: Float32, lstar: Float32) -> Int:
+    def solve_to_int(
+        hue_degrees: Float64, chroma: Float64, lstar: Float64
+    ) -> Int:
         if chroma < 0.0001 or lstar < 0.0001 or lstar > 99.9999:
             return ColorUtils.argbFromLstar(lstar)
-        let hue_degrees2 = MathUtils.sanitizeDegreesDouble(hue_degrees)
-        let hue_radians = hue_degrees / 180 * MathPi
-        let y = ColorUtils.yFromLstar(lstar)
-        let exact_answer = Self.find_result_by_j(hue_radians, chroma, y)
+        var hue_degrees2 = MathUtils.sanitizeDegreesDouble(hue_degrees)
+        var hue_radians = hue_degrees2 / 180 * MathPi
+        var y = ColorUtils.yFromLstar(lstar)
+        var exact_answer = Self.find_result_by_j(hue_radians, chroma, y)
         if exact_answer != 0:
             return exact_answer
-        let linrgb = Self.bisect_to_limit(y, hue_radians)
+        var linrgb = Self.bisect_to_limit(y, hue_radians)
         return ColorUtils.argbFromLinrgb(linrgb)
 
     @staticmethod
-    fn solve_to_cam(hue_degrees: Float32, chroma: Float32, lstar: Float32) -> Cam16:
+    def solve_to_cam(
+        hue_degrees: Float64, chroma: Float64, lstar: Float64
+    ) -> Cam16:
         return Cam16.from_int(Self.solve_to_int(hue_degrees, chroma, lstar))
 
 
-fn float_pow(base: Float32, exponent: Float32) -> Float32:
-    return base ** Float32(exponent)
+def float_pow(base: Float64, exponent: Float64) -> Float64:
+    return base ** Float64(exponent)

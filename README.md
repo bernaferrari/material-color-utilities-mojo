@@ -1,12 +1,38 @@
-# Material Color Utilities Mojo 🔥
+# Material Color Utilities Mojo
 
 ![Image of Material Color Utilities Mojo](https://github.com/bernaferrari/material-color-utilities-mojo/raw/main/assets/readme.png)
 
-Mojo port of the [Material Color Utilities](https://github.com/material-foundation/material-color-utilities/)
+Mojo port of the [Material Color Utilities](https://github.com/material-foundation/material-color-utilities/).
 
-To execute: `mojo blend_test.mojo`
+## Setup
 
-This is what is implemented right now. The most complex, low level stuff are mostly complete, while the higher level stuff (such as palettes, scheme) are still in progress:
+This project is pinned to stable Mojo `1.0.0b1` using `uv`, matching the
+current stable install path from the Mojo install docs:
+
+```sh
+uv sync
+uv run mojo blend_test.mojo
+uv run mojo contrast_test.mojo
+uv run mojo color_utils_test.mojo
+uv run mojo string_utils_test.mojo
+uv run mojo math_utils_test.mojo
+uv run mojo dislike_analyzer_test.mojo
+uv run mojo hct_test.mojo
+uv run mojo palettes_test.mojo
+uv run mojo score_test.mojo
+uv run mojo temperature_cache_test.mojo
+uv run mojo quantizer_map_test.mojo
+uv run mojo quantizer_wu_test.mojo
+uv run mojo quantizer_wsmeans_test.mojo
+uv run mojo quantizer_celebi_test.mojo
+uv run mojo scheme_test.mojo
+uv run mojo scheme_dynamic_test.mojo
+uv run mojo scheme_correctness_test.mojo
+uv run mojo contrast_curve_test.mojo
+uv run mojo dynamic_color_test.mojo
+```
+
+Implemented components:
 
 - ✅ blend
 
@@ -14,34 +40,31 @@ This is what is implemented right now. The most complex, low level stuff are mos
 
 - ✅ dislike
 
-- [ ] dynamic color (requires enum)
+- ✅ dynamic color
 
 - ✅ hct
 
-- [ ] palettes
+- ✅ palettes
 
-- [ ] quantize
+- ✅ quantize
 
-- [ ] scheme
+- ✅ scheme
 
-- [ ] score
+- ✅ score
 
-- [ ] temperature
+- ✅ temperature
 
 - ✅ utilities
 
-- [ ] tests
+- ✅ tests for blend, contrast, utilities, dislike, hct, palettes, score, temperature, quantize, dynamic color, and scheme
 
-As Mojo evolves, it will be fun to use `Tensor` instead of `StaticTuple[3, StaticTuple[3, Float32]]`, add tests, and optimize for paralellization. There are many matrix operations that could be optimized by SIMD.
+The old tracked Dart source copies have been replaced with Mojo modules. As
+Mojo evolves, it will be useful to evaluate `Tensor` or SIMD-backed helpers for
+the remaining matrix operations and optimize quantization for parallelization.
 
 Material Color Utilities is a fun project. It has implementation in 4 languages (Dart, C++, Swift and TypeScript), they are all tested, and it has periodical usage of matrix operations. It is a great candidate for benchmarking how fast Mojo is.
 
-Initial Benchmark (benchmark_blend.mojo):
-
-- Mojo: 0.8s
-- Dart: 1.2s
-
-More benchmarks soon (as well as paralellization).
+Use `uv run mojo benchmark_blend.mojo` for the current blend benchmark.
 
 --- Original README:
 
