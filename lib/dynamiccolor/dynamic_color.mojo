@@ -58,6 +58,11 @@ struct DynamicColorRole:
     comptime tertiary_fixed_dim = 51
     comptime on_tertiary_fixed = 52
     comptime on_tertiary_fixed_variant = 53
+    comptime error_palette_key_color = 54
+    comptime primary_dim = 55
+    comptime secondary_dim = 56
+    comptime tertiary_dim = 57
+    comptime error_dim = 58
 
 
 struct DynamicColor(Copyable, Movable):

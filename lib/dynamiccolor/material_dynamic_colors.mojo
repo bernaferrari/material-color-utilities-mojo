@@ -67,6 +67,11 @@ struct _Role:
     comptime tertiary_fixed_dim = 51
     comptime on_tertiary_fixed = 52
     comptime on_tertiary_fixed_variant = 53
+    comptime error_palette_key_color = 54
+    comptime primary_dim = 55
+    comptime secondary_dim = 56
+    comptime tertiary_dim = 57
+    comptime error_dim = 58
 
 
 struct MaterialDynamicColors:
@@ -365,6 +370,7 @@ struct MaterialDynamicColors:
             or role == _Role.on_primary_fixed_variant
             or role == _Role.surface_tint
             or role == _Role.primary_palette_key_color
+            or role == _Role.primary_dim
         ):
             return scheme.primary_palette.copy()
         if (
@@ -377,6 +383,7 @@ struct MaterialDynamicColors:
             or role == _Role.on_secondary_fixed
             or role == _Role.on_secondary_fixed_variant
             or role == _Role.secondary_palette_key_color
+            or role == _Role.secondary_dim
         ):
             return scheme.secondary_palette.copy()
         if (
@@ -389,6 +396,7 @@ struct MaterialDynamicColors:
             or role == _Role.on_tertiary_fixed
             or role == _Role.on_tertiary_fixed_variant
             or role == _Role.tertiary_palette_key_color
+            or role == _Role.tertiary_dim
         ):
             return scheme.tertiary_palette.copy()
         if (
@@ -404,6 +412,8 @@ struct MaterialDynamicColors:
             or role == _Role.on_error
             or role == _Role.error_container
             or role == _Role.on_error_container
+            or role == _Role.error_palette_key_color
+            or role == _Role.error_dim
         ):
             return scheme.error_palette.copy()
         return scheme.neutral_palette.copy()
@@ -416,6 +426,7 @@ struct MaterialDynamicColors:
             or role == _Role.tertiary_palette_key_color
             or role == _Role.neutral_palette_key_color
             or role == _Role.neutral_variant_palette_key_color
+            or role == _Role.error_palette_key_color
         ):
             return MaterialDynamicColors.palette_for(
                 role, scheme
@@ -445,6 +456,7 @@ struct MaterialDynamicColors:
             or role == _Role.primary_container
             or role == _Role.on_primary_container
             or role == _Role.inverse_primary
+            or role == _Role.primary_dim
         ):
             return MaterialDynamicColors._primary_tone(role, scheme)
         if (
@@ -452,6 +464,7 @@ struct MaterialDynamicColors:
             or role == _Role.on_secondary
             or role == _Role.secondary_container
             or role == _Role.on_secondary_container
+            or role == _Role.secondary_dim
         ):
             return MaterialDynamicColors._secondary_tone(role, scheme)
         if (
@@ -459,6 +472,7 @@ struct MaterialDynamicColors:
             or role == _Role.on_tertiary
             or role == _Role.tertiary_container
             or role == _Role.on_tertiary_container
+            or role == _Role.tertiary_dim
         ):
             return MaterialDynamicColors._tertiary_tone(role, scheme)
         if role == _Role.error:
@@ -469,6 +483,8 @@ struct MaterialDynamicColors:
             return 30.0 if scheme.is_dark else 90.0
         if role == _Role.on_error_container:
             return 90.0 if scheme.is_dark else 10.0
+        if role == _Role.error_dim:
+            return 80.0 if scheme.is_dark else 40.0
         var fixed_tone = MaterialDynamicColors._fixed_tone(role, scheme)
         if fixed_tone >= 0.0:
             return fixed_tone

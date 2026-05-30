@@ -39,6 +39,8 @@ from .dynamiccolor import (
     DynamicColorRole,
     DynamicScheme,
     MaterialDynamicColors,
+    Platform,
+    SpecVersion,
     ToneDeltaPair,
     TonePolarity,
     Variant,

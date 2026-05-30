@@ -3,7 +3,7 @@ from std.testing import assert_true
 from std.utils import StaticTuple
 
 from lib.dynamiccolor.dynamic_color import DynamicColorRole
-from lib.dynamiccolor.dynamic_scheme import DynamicScheme
+from lib.dynamiccolor.dynamic_scheme import DynamicScheme, Platform, SpecVersion
 from lib.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
 from lib.hct.hct import Hct
 from lib.scheme.scheme_monochrome import SchemeMonochrome
@@ -30,6 +30,40 @@ def main() raises:
             empty_rotations,
         ),
         43.0,
+        1.0,
+    )
+
+    var mismatch_hues = List[Float64]()
+    mismatch_hues.append(0.0)
+    var mismatch_rotations = List[Float64]()
+    mismatch_rotations.append(0.0)
+    mismatch_rotations.append(1.0)
+    assert_near(
+        DynamicScheme.get_rotated_hue_from_lists(
+            Hct.from_hct(43.0, 16.0, 16.0),
+            mismatch_hues,
+            mismatch_rotations,
+        ),
+        43.0,
+        1.0,
+    )
+
+    var piecewise_breakpoints = List[Float64]()
+    piecewise_breakpoints.append(0.0)
+    piecewise_breakpoints.append(101.0)
+    piecewise_breakpoints.append(210.0)
+    piecewise_breakpoints.append(360.0)
+    var piecewise_hues = List[Float64]()
+    piecewise_hues.append(26.0)
+    piecewise_hues.append(39.0)
+    piecewise_hues.append(28.0)
+    assert_near(
+        DynamicScheme.get_piecewise_hue_from_lists(
+            Hct.from_hct(120.0, 16.0, 16.0),
+            piecewise_breakpoints,
+            piecewise_hues,
+        ),
+        39.0,
         1.0,
     )
 
@@ -101,6 +135,14 @@ def main() raises:
     )
 
     var mono_dark = SchemeMonochrome.make(Hct.from_int(0xFF0000FF), True, 0.0)
+    assert_true(mono_dark.platform == Platform.phone)
+    assert_true(mono_dark.spec_version == SpecVersion.v2021)
+    assert_true(
+        DynamicScheme.maybe_fallback_spec_version(
+            SpecVersion.v2026, mono_dark.variant
+        )
+        == SpecVersion.v2021
+    )
     assert_role_tone(mono_dark, DynamicColorRole.primary, 100.0)
     assert_role_tone(mono_dark, DynamicColorRole.on_primary, 10.0)
     assert_role_tone(mono_dark, DynamicColorRole.primary_container, 85.0)

@@ -244,6 +244,16 @@ def main() raises:
     assert_contrast_sweep_for(0xFF0000FF, 1.0, False)
 
     var fixed_scheme = SchemeTonalSpot.make(Hct.from_int(0xFFFF0000), True, 0.0)
+    assert_equal(
+        fixed_scheme.error_palette.key_color.to_int(),
+        MaterialDynamicColors.get_argb(
+            DynamicColorRole.error_palette_key_color, fixed_scheme
+        ),
+    )
+    assert_role_tone(fixed_scheme, DynamicColorRole.primary_dim, 80.0)
+    assert_role_tone(fixed_scheme, DynamicColorRole.secondary_dim, 80.0)
+    assert_role_tone(fixed_scheme, DynamicColorRole.tertiary_dim, 80.0)
+    assert_role_tone(fixed_scheme, DynamicColorRole.error_dim, 80.0)
     assert_role_tone(fixed_scheme, DynamicColorRole.primary_fixed, 90.0)
     assert_role_tone(fixed_scheme, DynamicColorRole.primary_fixed_dim, 80.0)
     assert_role_tone(fixed_scheme, DynamicColorRole.on_primary_fixed, 10.0)
