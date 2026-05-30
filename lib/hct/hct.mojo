@@ -36,6 +36,30 @@ struct Hct(Copyable, Movable):
     def fromInt(argb: Int) -> Hct:
         return Hct.from_int(argb)
 
+    @staticmethod
+    def is_blue(hue: Float64) -> Bool:
+        return hue >= 250.0 and hue < 270.0
+
+    @staticmethod
+    def isBlue(hue: Float64) -> Bool:
+        return Hct.is_blue(hue)
+
+    @staticmethod
+    def is_yellow(hue: Float64) -> Bool:
+        return hue >= 105.0 and hue < 125.0
+
+    @staticmethod
+    def isYellow(hue: Float64) -> Bool:
+        return Hct.is_yellow(hue)
+
+    @staticmethod
+    def is_cyan(hue: Float64) -> Bool:
+        return hue >= 170.0 and hue < 207.0
+
+    @staticmethod
+    def isCyan(hue: Float64) -> Bool:
+        return Hct.is_cyan(hue)
+
     def __eq__(self, other: Hct) -> Bool:
         return self.argb == other.argb
 

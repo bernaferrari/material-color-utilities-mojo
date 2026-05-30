@@ -36,6 +36,7 @@ from .dynamiccolor import (
 
 from .scheme import (
     Scheme,
+    SchemeCmf,
     SchemeContent,
     SchemeExpressive,
     SchemeFidelity,

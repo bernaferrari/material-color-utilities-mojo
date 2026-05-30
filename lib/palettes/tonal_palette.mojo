@@ -120,6 +120,24 @@ struct TonalPalette(Copyable, Movable):
                 return False
         return True
 
+    @staticmethod
+    def _average_argb(argb1: Int, argb2: Int) -> Int:
+        var red1 = (argb1 >> 16) & 0xFF
+        var green1 = (argb1 >> 8) & 0xFF
+        var blue1 = argb1 & 0xFF
+        var red2 = (argb2 >> 16) & 0xFF
+        var green2 = (argb2 >> 8) & 0xFF
+        var blue2 = argb2 & 0xFF
+        var red = Int(round((Float64(red1) + Float64(red2)) / 2.0))
+        var green = Int(round((Float64(green1) + Float64(green2)) / 2.0))
+        var blue = Int(round((Float64(blue1) + Float64(blue2)) / 2.0))
+        return (
+            (0xFF << 24)
+            | ((red & 0xFF) << 16)
+            | ((green & 0xFF) << 8)
+            | (blue & 0xFF)
+        )
+
     def __eq__(self, other: TonalPalette) -> Bool:
         if not self.from_cache and not other.from_cache:
             return self.hue == other.hue and self.chroma == other.chroma
@@ -144,6 +162,8 @@ struct TonalPalette(Copyable, Movable):
             var index = TonalPalette._common_tone_index(tone)
             if index >= 0:
                 return self.cache[index]
+        if tone == 99 and Hct.is_yellow(self.hue):
+            return TonalPalette._average_argb(self.get(98), self.get(100))
 
         return Hct.from_hct(self.hue, self.chroma, Float64(tone)).to_int()
 
@@ -154,6 +174,8 @@ struct TonalPalette(Copyable, Movable):
                 var index = TonalPalette._common_tone_index(rounded_tone)
                 if index >= 0:
                     return Hct.from_int(self.cache[index])
+        if tone == 99.0 and Hct.is_yellow(self.hue):
+            return Hct.from_int(self.get(99))
         return Hct.from_hct(self.hue, self.chroma, tone)
 
     def as_list(self) -> StaticTuple[Int, 13]:

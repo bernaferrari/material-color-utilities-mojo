@@ -31,6 +31,14 @@ def assert_color_close(actual: Int, expected: Int, tolerance: Int = 2) raises:
 
 
 def main() raises:
+    assert_true(Hct.is_yellow(105.0))
+    assert_true(Hct.isYellow(124.999))
+    assert_true(not Hct.is_yellow(125.0))
+    assert_true(Hct.is_blue(250.0))
+    assert_true(not Hct.isBlue(270.0))
+    assert_true(Hct.is_cyan(170.0))
+    assert_true(not Hct.isCyan(207.0))
+
     var hct = Hct.from_int(0xFF0000FF)
     var tones = TonalPalette.of(hct.hue, hct.chroma)
 
@@ -100,6 +108,41 @@ def main() raises:
             StaticTuple[Int, 13](0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
         ).as_list()[12],
     )
+
+    var yellow_palette = TonalPalette.of(110.0, 50.0)
+    var yellow_98 = yellow_palette.get(98)
+    var yellow_100 = yellow_palette.get(100)
+    var expected_yellow_99 = ColorUtils.argbFromRgb(
+        Int(
+            round(
+                (
+                    Float64(ColorUtils.redFromArgb(yellow_98))
+                    + Float64(ColorUtils.redFromArgb(yellow_100))
+                )
+                / 2.0
+            )
+        ),
+        Int(
+            round(
+                (
+                    Float64(ColorUtils.greenFromArgb(yellow_98))
+                    + Float64(ColorUtils.greenFromArgb(yellow_100))
+                )
+                / 2.0
+            )
+        ),
+        Int(
+            round(
+                (
+                    Float64(ColorUtils.blueFromArgb(yellow_98))
+                    + Float64(ColorUtils.blueFromArgb(yellow_100))
+                )
+                / 2.0
+            )
+        ),
+    )
+    assert_equal(expected_yellow_99, yellow_palette.get(99))
+    assert_equal(expected_yellow_99, yellow_palette.get_hct(99.0).to_int())
 
     var palette_1 = TonalPalette.of(270.0, 36.0)
     var palette_2 = TonalPalette.of(180.0, 36.0)

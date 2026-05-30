@@ -26,6 +26,7 @@ uv run mojo quantizer_wu_test.mojo
 uv run mojo quantizer_wsmeans_test.mojo
 uv run mojo quantizer_celebi_test.mojo
 uv run mojo scheme_test.mojo
+uv run mojo scheme_cmf_test.mojo
 uv run mojo scheme_dynamic_test.mojo
 uv run mojo scheme_correctness_test.mojo
 uv run mojo contrast_curve_test.mojo
