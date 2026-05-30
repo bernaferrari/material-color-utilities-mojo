@@ -34,7 +34,7 @@ struct SchemeCmf:
                 secondary_source_color_hct.chroma,
             )
 
-        return DynamicScheme(
+        var scheme = DynamicScheme(
             source_color_hct.copy(),
             Variant.cmf,
             is_dark,
@@ -56,7 +56,10 @@ struct SchemeCmf:
                 ),
                 math.max(source_color_hct.chroma, 50.0),
             ),
+            spec_version=2026,
         )
+        scheme.secondary_source_color_hct = secondary_source_color_hct.copy()
+        return scheme^
 
     @staticmethod
     def get_error_hue(primary_hue: Float64, tertiary_hue: Float64) -> Float64:

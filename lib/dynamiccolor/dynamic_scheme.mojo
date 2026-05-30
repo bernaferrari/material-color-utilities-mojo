@@ -20,6 +20,7 @@ struct Platform:
 struct DynamicScheme(Copyable, Movable):
     var source_color_argb: Int
     var source_color_hct: Hct
+    var secondary_source_color_hct: Hct
     var variant: Int
     var is_dark: Bool
     var contrast_level: Float64
@@ -49,6 +50,7 @@ struct DynamicScheme(Copyable, Movable):
     ):
         self.source_color_argb = source_color_hct.to_int()
         self.source_color_hct = source_color_hct^
+        self.secondary_source_color_hct = self.source_color_hct.copy()
         self.variant = variant
         self.is_dark = is_dark
         self.contrast_level = contrast_level
