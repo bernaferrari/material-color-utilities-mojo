@@ -53,6 +53,102 @@ struct CorePalette(Copyable, Movable):
         return CorePalette._content_from_hue_and_chroma(cam.hue, cam.chroma)
 
     @staticmethod
+    def contentOf(argb: Int) -> CorePalette:
+        return CorePalette.content_of(argb)
+
+    @staticmethod
+    def from_colors(
+        primary: Int,
+        secondary: Int = -1,
+        tertiary: Int = -1,
+        neutral: Int = -1,
+        neutral_variant: Int = -1,
+        error: Int = -1,
+    ) -> CorePalette:
+        return CorePalette._create_palette_from_colors(
+            False, primary, secondary, tertiary, neutral, neutral_variant, error
+        )
+
+    @staticmethod
+    def fromColors(
+        primary: Int,
+        secondary: Int = -1,
+        tertiary: Int = -1,
+        neutral: Int = -1,
+        neutral_variant: Int = -1,
+        error: Int = -1,
+    ) -> CorePalette:
+        return CorePalette.from_colors(
+            primary, secondary, tertiary, neutral, neutral_variant, error
+        )
+
+    @staticmethod
+    def content_from_colors(
+        primary: Int,
+        secondary: Int = -1,
+        tertiary: Int = -1,
+        neutral: Int = -1,
+        neutral_variant: Int = -1,
+        error: Int = -1,
+    ) -> CorePalette:
+        return CorePalette._create_palette_from_colors(
+            True, primary, secondary, tertiary, neutral, neutral_variant, error
+        )
+
+    @staticmethod
+    def contentFromColors(
+        primary: Int,
+        secondary: Int = -1,
+        tertiary: Int = -1,
+        neutral: Int = -1,
+        neutral_variant: Int = -1,
+        error: Int = -1,
+    ) -> CorePalette:
+        return CorePalette.content_from_colors(
+            primary, secondary, tertiary, neutral, neutral_variant, error
+        )
+
+    @staticmethod
+    def _create_palette_from_colors(
+        content: Bool,
+        primary: Int,
+        secondary: Int,
+        tertiary: Int,
+        neutral: Int,
+        neutral_variant: Int,
+        error: Int,
+    ) -> CorePalette:
+        var palette = CorePalette.content_of(
+            primary
+        ) if content else CorePalette.of(primary)
+        if secondary >= 0:
+            var p = CorePalette.content_of(
+                secondary
+            ) if content else CorePalette.of(secondary)
+            palette.secondary = p.primary.copy()
+        if tertiary >= 0:
+            var p = CorePalette.content_of(
+                tertiary
+            ) if content else CorePalette.of(tertiary)
+            palette.tertiary = p.primary.copy()
+        if error >= 0:
+            var p = CorePalette.content_of(
+                error
+            ) if content else CorePalette.of(error)
+            palette.error = p.primary.copy()
+        if neutral >= 0:
+            var p = CorePalette.content_of(
+                neutral
+            ) if content else CorePalette.of(neutral)
+            palette.neutral = p.neutral.copy()
+        if neutral_variant >= 0:
+            var p = CorePalette.content_of(
+                neutral_variant
+            ) if content else CorePalette.of(neutral_variant)
+            palette.neutral_variant = p.neutral_variant.copy()
+        return palette^
+
+    @staticmethod
     def _content_from_hue_and_chroma(
         hue: Float64, chroma: Float64
     ) -> CorePalette:
@@ -126,6 +222,21 @@ struct CorePalette(Copyable, Movable):
             + self.error.__str__()
             + "\n"
         )
+
+    def a1(self) -> TonalPalette:
+        return self.primary.copy()
+
+    def a2(self) -> TonalPalette:
+        return self.secondary.copy()
+
+    def a3(self) -> TonalPalette:
+        return self.tertiary.copy()
+
+    def n1(self) -> TonalPalette:
+        return self.neutral.copy()
+
+    def n2(self) -> TonalPalette:
+        return self.neutral_variant.copy()
 
     def as_list(self) -> StaticTuple[Int, 65]:
         var p = self.primary.as_list()

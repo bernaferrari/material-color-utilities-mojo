@@ -35,6 +35,13 @@ def single_color_cases() raises:
     var celebi_red = QuantizerCelebi.quantize(red, 256)
     assert_equal(1, len(celebi_red.color_to_count))
     assert_equal(0xFFFF0000, dict_key_at(celebi_red.color_to_count, 0))
+    assert_equal(1, QuantizerCelebi.quantize_map(red, 256)[0xFFFF0000])
+
+    var green = List[Int]()
+    append_color(green, 0xFF00FF00, 1)
+    var celebi_green = QuantizerCelebi.quantize(green, 256)
+    assert_equal(1, len(celebi_green.color_to_count))
+    assert_equal(1, celebi_green.color_to_count[0xFF00FF00])
 
     var random = List[Int]()
     append_color(random, 0xFF141216, 1)
@@ -70,6 +77,8 @@ def multicolor_cases() raises:
     assert_equal(2, len(celebi_rg.color_to_count))
     assert_equal(0xFF00FF00, dict_key_at(celebi_rg.color_to_count, 0))
     assert_equal(0xFFFF0000, dict_key_at(celebi_rg.color_to_count, 1))
+    assert_equal(2, celebi_rg.color_to_count[0xFFFF0000])
+    assert_equal(3, celebi_rg.color_to_count[0xFF00FF00])
 
     var rgb = List[Int]()
     rgb.append(0xFFFF0000)
@@ -85,6 +94,9 @@ def multicolor_cases() raises:
     assert_equal(0xFF0000FF, dict_key_at(celebi_rgb.color_to_count, 0))
     assert_equal(0xFFFF0000, dict_key_at(celebi_rgb.color_to_count, 1))
     assert_equal(0xFF00FF00, dict_key_at(celebi_rgb.color_to_count, 2))
+    assert_equal(1, celebi_rgb.color_to_count[0xFFFF0000])
+    assert_equal(1, celebi_rgb.color_to_count[0xFF00FF00])
+    assert_equal(1, celebi_rgb.color_to_count[0xFF0000FF])
 
 
 def main() raises:

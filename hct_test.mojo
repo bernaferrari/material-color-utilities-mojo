@@ -23,6 +23,10 @@ def color_is_on_boundary(argb: Int) -> Bool:
     )
 
 
+def cap255(value: Int) -> Int:
+    return 255 if value > 255 else value
+
+
 def assert_cam(
     argb: Int,
     j: Float64,
@@ -86,6 +90,18 @@ def main() raises:
         for g in range(0, 256, 51):
             for b in range(0, 256, 51):
                 var argb = ColorUtils.argbFromRgb(r, g, b)
+                var hct = Hct.from_int(argb)
+                var reconstructed = Hct.from_hct(
+                    hct.hue, hct.chroma, hct.tone
+                ).to_int()
+                assert_equal(argb, reconstructed)
+
+    for r in range(0, 256, 37):
+        for g in range(0, 256, 37):
+            for b in range(0, 256, 37):
+                var argb = ColorUtils.argbFromRgb(
+                    cap255(r), cap255(g), cap255(b)
+                )
                 var hct = Hct.from_int(argb)
                 var reconstructed = Hct.from_hct(
                     hct.hue, hct.chroma, hct.tone

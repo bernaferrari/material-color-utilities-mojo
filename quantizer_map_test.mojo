@@ -15,3 +15,8 @@ def main() raises:
     assert_equal(2, result.color_to_count[0xFF000000])
     assert_equal(1, result.color_to_count[0xFFFFFFFF])
     assert_equal(2, len(result.color_to_count))
+
+    var color_to_count = QuantizerMap.quantize_map(pixels)
+    assert_equal(2, color_to_count[0xFF000000])
+    assert_equal(1, color_to_count[0xFFFFFFFF])
+    assert_equal(2, len(color_to_count))

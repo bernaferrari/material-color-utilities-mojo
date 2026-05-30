@@ -1,4 +1,5 @@
 from .scheme import Scheme
+from .scheme_android import SchemeAndroid
 from .scheme_cmf import SchemeCmf
 from .scheme_content import SchemeContent
 from .scheme_expressive import SchemeExpressive

@@ -41,6 +41,15 @@ def main() raises:
 
     var hct = Hct.from_int(0xFF0000FF)
     var tones = TonalPalette.of(hct.hue, hct.chroma)
+    var tones_from_int = TonalPalette.fromInt(0xFF0000FF)
+    assert_equal(tones.get(40), tones_from_int.tone(40))
+    assert_equal(tones.get(50), TonalPalette.fromHct(hct.copy()).get(50))
+    assert_equal(
+        tones.get(60),
+        TonalPalette.fromHueAndChroma(hct.hue, hct.chroma).get(60),
+    )
+    assert_equal(tones.get_hct(70.0).to_int(), tones.getHct(70.0).to_int())
+    assert_near(tones.keyColor().hue, tones.key_color.hue, 0.0001)
 
     assert_equal(0xFF000000, tones.get(0))
     assert_color_close(tones.get(10), 0xFF00006E, 1)
@@ -164,13 +173,71 @@ def main() raises:
     assert_equal("TonalPalette.fromList(...)", palette_4.__str__())
 
     var core = CorePalette.of(0xFF0000FF)
+    assert_equal(core.primary.get(40), core.a1().get(40))
+    assert_equal(core.secondary.get(40), core.a2().get(40))
+    assert_equal(core.tertiary.get(40), core.a3().get(40))
+    assert_equal(core.neutral.get(40), core.n1().get(40))
+    assert_equal(core.neutral_variant.get(40), core.n2().get(40))
     assert_equal(0xFFFFFFFF, core.primary.get(100))
     assert_equal(0xFF000000, core.primary.get(0))
     assert_true(core == CorePalette.of(0xFF0000FF))
     assert_true(core != CorePalette.of(0xFF123456))
     assert_true(CorePalette.from_list(core.as_list()) == core)
     assert_equal(True, core.__str__().byte_length() > 0)
+    assert_true(
+        CorePalette.content_of(0xFF0000FF) == CorePalette.contentOf(0xFF0000FF)
+    )
+    var from_colors = CorePalette.fromColors(
+        0xFF0000FF,
+        secondary=0xFF00FF00,
+        tertiary=0xFFFFFF00,
+        neutral=0xFFFF0000,
+        neutral_variant=0xFF123456,
+        error=0xFF654321,
+    )
+    assert_equal(
+        CorePalette.of(0xFF00FF00).primary.get(40),
+        from_colors.secondary.get(40),
+    )
+    assert_equal(
+        CorePalette.of(0xFFFFFF00).primary.get(40), from_colors.tertiary.get(40)
+    )
+    assert_equal(
+        CorePalette.of(0xFFFF0000).neutral.get(40), from_colors.neutral.get(40)
+    )
+    assert_equal(
+        CorePalette.of(0xFF123456).neutral_variant.get(40),
+        from_colors.neutral_variant.get(40),
+    )
+    assert_equal(
+        CorePalette.of(0xFF654321).primary.get(40), from_colors.error.get(40)
+    )
+
+    assert_equal(0xFFFFFFFF, core.secondary.get(100))
+    assert_equal(0xFFF1EFFF, core.secondary.get(95))
+    assert_equal(0xFFE1E0F9, core.secondary.get(90))
+    assert_equal(0xFFC5C4DD, core.secondary.get(80))
+    assert_equal(0xFFA9A9C1, core.secondary.get(70))
+    assert_equal(0xFF8F8FA6, core.secondary.get(60))
+    assert_equal(0xFF75758B, core.secondary.get(50))
+    assert_equal(0xFF5C5D72, core.secondary.get(40))
+    assert_equal(0xFF444559, core.secondary.get(30))
+    assert_equal(0xFF2E2F42, core.secondary.get(20))
+    assert_equal(0xFF191A2C, core.secondary.get(10))
+    assert_equal(0xFF000000, core.secondary.get(0))
 
     var content = CorePalette.content_of(0xFF0000FF)
     assert_equal(0xFFFFFFFF, content.primary.get(100))
     assert_equal(0xFF000000, content.primary.get(0))
+    assert_equal(0xFFFFFFFF, content.secondary.get(100))
+    assert_equal(0xFFF1EFFF, content.secondary.get(95))
+    assert_equal(0xFFE0E0FF, content.secondary.get(90))
+    assert_equal(0xFFC1C3F4, content.secondary.get(80))
+    assert_equal(0xFFA5A7D7, content.secondary.get(70))
+    assert_equal(0xFF8B8DBB, content.secondary.get(60))
+    assert_equal(0xFF7173A0, content.secondary.get(50))
+    assert_equal(0xFF585B86, content.secondary.get(40))
+    assert_equal(0xFF40436D, content.secondary.get(30))
+    assert_equal(0xFF2A2D55, content.secondary.get(20))
+    assert_equal(0xFF14173F, content.secondary.get(10))
+    assert_equal(0xFF000000, content.secondary.get(0))

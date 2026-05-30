@@ -41,6 +41,14 @@ struct TonalPalette(Copyable, Movable):
         )
 
     @staticmethod
+    def from_int(argb: Int) -> TonalPalette:
+        return TonalPalette.from_hct(Hct.from_int(argb))
+
+    @staticmethod
+    def fromInt(argb: Int) -> TonalPalette:
+        return TonalPalette.from_int(argb)
+
+    @staticmethod
     def from_hct(var hct: Hct) -> TonalPalette:
         return TonalPalette(
             hct.hue,
@@ -49,6 +57,18 @@ struct TonalPalette(Copyable, Movable):
             StaticTuple[Int, 13](fill=0),
             False,
         )
+
+    @staticmethod
+    def fromHct(var hct: Hct) -> TonalPalette:
+        return TonalPalette.from_hct(hct^)
+
+    @staticmethod
+    def from_hue_and_chroma(hue: Float64, chroma: Float64) -> TonalPalette:
+        return TonalPalette.of(hue, chroma)
+
+    @staticmethod
+    def fromHueAndChroma(hue: Float64, chroma: Float64) -> TonalPalette:
+        return TonalPalette.from_hue_and_chroma(hue, chroma)
 
     @staticmethod
     def from_list(colors: StaticTuple[Int, 13]) -> TonalPalette:
@@ -167,6 +187,9 @@ struct TonalPalette(Copyable, Movable):
 
         return Hct.from_hct(self.hue, self.chroma, Float64(tone)).to_int()
 
+    def tone(self, tone: Int) -> Int:
+        return self.get(tone)
+
     def get_hct(self, tone: Float64) -> Hct:
         if self.from_cache:
             var rounded_tone = Int(round(tone))
@@ -177,6 +200,12 @@ struct TonalPalette(Copyable, Movable):
         if tone == 99.0 and Hct.is_yellow(self.hue):
             return Hct.from_int(self.get(99))
         return Hct.from_hct(self.hue, self.chroma, tone)
+
+    def getHct(self, tone: Float64) -> Hct:
+        return self.get_hct(tone)
+
+    def keyColor(self) -> Hct:
+        return self.key_color.copy()
 
     def as_list(self) -> StaticTuple[Int, 13]:
         return StaticTuple[Int, 13](

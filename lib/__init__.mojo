@@ -1,4 +1,14 @@
-from .utils import ColorUtils, MathUtils, StringUtils
+from .utils import (
+    ColorGroup,
+    ColorUtils,
+    CustomColor,
+    CustomColorGroup,
+    ImageUtils,
+    MathUtils,
+    StringUtils,
+    Theme,
+    ThemeUtils,
+)
 
 from .blend import Blend
 
@@ -36,6 +46,7 @@ from .dynamiccolor import (
 
 from .scheme import (
     Scheme,
+    SchemeAndroid,
     SchemeCmf,
     SchemeContent,
     SchemeExpressive,

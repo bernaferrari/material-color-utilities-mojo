@@ -15,6 +15,8 @@ uv run mojo blend_test.mojo
 uv run mojo contrast_test.mojo
 uv run mojo color_utils_test.mojo
 uv run mojo string_utils_test.mojo
+uv run mojo image_utils_test.mojo
+uv run mojo theme_utils_test.mojo
 uv run mojo math_utils_test.mojo
 uv run mojo dislike_analyzer_test.mojo
 uv run mojo hct_test.mojo
@@ -26,6 +28,7 @@ uv run mojo quantizer_wu_test.mojo
 uv run mojo quantizer_wsmeans_test.mojo
 uv run mojo quantizer_celebi_test.mojo
 uv run mojo scheme_test.mojo
+uv run mojo scheme_android_test.mojo
 uv run mojo scheme_cmf_test.mojo
 uv run mojo scheme_dynamic_test.mojo
 uv run mojo scheme_correctness_test.mojo
