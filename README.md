@@ -67,12 +67,7 @@ uv run mojo format $(rg --files -g '*.mojo')
 
 ## Coverage
 
-- Material 2021 dynamic schemes.
-- Android dynamic schemes.
-- Material 2025 dynamic schemes.
-- CMF 2026 dynamic schemes.
-- Phone and watch platform behavior.
-- Generated TypeScript parity fixtures for the 2025 dynamic color matrix.
+The Mojo implementation is tested for compatibility with the upstream TypeScript Material Color Utilities behavior.
 
 ## Benchmark
 
