@@ -851,6 +851,11 @@ struct MaterialDynamicColors:
             or role == _Role.outline_variant
             or role == _Role.neutral_variant_palette_key_color
         ):
+            if (
+                MaterialDynamicColors._is_2025(scheme)
+                or MaterialDynamicColors._is_cmf_2026(scheme)
+            ) and role != _Role.neutral_variant_palette_key_color:
+                return scheme.neutral_palette.copy()
             return scheme.neutral_variant_palette.copy()
         if (
             role == _Role.error
@@ -1023,7 +1028,7 @@ struct MaterialDynamicColors:
                 or role == _Role.on_tertiary_fixed
                 or role == _Role.on_tertiary_fixed_variant
             ):
-                var bg_role = MaterialDynamicColors._background_role(
+                var bg_role = MaterialDynamicColors._modern_background_role(
                     role, scheme
                 )
                 if bg_role >= 0:
@@ -1317,14 +1322,17 @@ struct MaterialDynamicColors:
                     return ContrastCurve(6.0, 6.0, 7.0, 11.0)
                 return ContrastCurve(7.0, 7.0, 11.0, 21.0)
             if (
+                role == _Role.primary_dim
+                or role == _Role.secondary_dim
+                or role == _Role.tertiary_dim
+                or role == _Role.error_dim
+            ):
+                return ContrastCurve(4.5, 4.5, 7.0, 11.0)
+            if (
                 role == _Role.primary
                 or role == _Role.secondary
                 or role == _Role.tertiary
                 or role == _Role.error
-                or role == _Role.primary_dim
-                or role == _Role.secondary_dim
-                or role == _Role.tertiary_dim
-                or role == _Role.error_dim
             ):
                 if scheme.platform == 0:
                     return ContrastCurve(4.5, 4.5, 7.0, 11.0)
@@ -1583,7 +1591,10 @@ struct MaterialDynamicColors:
             or role == _Role.secondary
             or role == _Role.tertiary
             or role == _Role.error
-            or role == _Role.primary_dim
+        ):
+            return scheme.platform == 0
+        if (
+            role == _Role.primary_dim
             or role == _Role.secondary_dim
             or role == _Role.tertiary_dim
             or role == _Role.error_dim
@@ -1600,6 +1611,58 @@ struct MaterialDynamicColors:
                 or role == _Role.error_container
             )
         return False
+
+    @staticmethod
+    def _modern_background_role(role: Int, scheme: DynamicScheme) -> Int:
+        if scheme.platform == 1:
+            if (
+                role == _Role.primary_container
+                or role == _Role.secondary_container
+                or role == _Role.tertiary_container
+                or role == _Role.error_container
+            ):
+                return -1
+            if (
+                role == _Role.on_surface
+                or role == _Role.on_surface_variant
+                or role == _Role.outline
+                or role == _Role.outline_variant
+            ):
+                return _Role.surface_container_high
+            if (
+                role == _Role.primary
+                or role == _Role.secondary
+                or role == _Role.tertiary
+                or role == _Role.error
+                or role == _Role.primary_dim
+                or role == _Role.secondary_dim
+                or role == _Role.tertiary_dim
+                or role == _Role.error_dim
+            ):
+                return _Role.surface_container_high
+            if role == _Role.on_primary:
+                return _Role.primary_dim
+            if role == _Role.on_secondary:
+                return _Role.secondary_dim
+            if role == _Role.on_tertiary:
+                return _Role.tertiary_dim
+            if role == _Role.on_error:
+                return _Role.error_dim
+        return MaterialDynamicColors._background_role(role, scheme)
+
+    @staticmethod
+    def _modern_has_contrast_curve(role: Int, scheme: DynamicScheme) -> Bool:
+        if (
+            role == _Role.primary_container
+            or role == _Role.secondary_container
+            or role == _Role.tertiary_container
+            or role == _Role.error_container
+            or role == _Role.primary_fixed
+            or role == _Role.secondary_fixed
+            or role == _Role.tertiary_fixed
+        ):
+            return scheme.platform == 0 and scheme.contrast_level > 0.0
+        return True
 
     @staticmethod
     def _pair_stay_together(role: Int) -> Bool:
@@ -1635,6 +1698,20 @@ struct MaterialDynamicColors:
                 var ref_tone = MaterialDynamicColors._base_tone(
                     ref_role, scheme
                 )
+                if scheme.platform == 1 and (
+                    role == _Role.primary_container
+                    or role == _Role.secondary_container
+                    or role == _Role.tertiary_container
+                    or role == _Role.error_container
+                ):
+                    ref_tone = MaterialDynamicColors.get_tone(ref_role, scheme)
+                elif (
+                    role == _Role.primary_dim
+                    or role == _Role.secondary_dim
+                    or role == _Role.tertiary_dim
+                    or role == _Role.error_dim
+                ):
+                    ref_tone = MaterialDynamicColors.get_tone(ref_role, scheme)
                 var absolute_delta = MaterialDynamicColors._pair_delta(
                     role, scheme
                 )
@@ -1660,10 +1737,14 @@ struct MaterialDynamicColors:
                         0.0, ref_tone + relative_delta, self_tone
                     )
 
-                var bg_role = MaterialDynamicColors._background_role(
+                var bg_role = MaterialDynamicColors._modern_background_role(
                     role, scheme
                 )
                 if bg_role >= 0:
+                    if not MaterialDynamicColors._modern_has_contrast_curve(
+                        role, scheme
+                    ):
+                        return self_tone
                     var bg_tone = MaterialDynamicColors.get_tone(
                         bg_role, scheme
                     )
@@ -1693,8 +1774,14 @@ struct MaterialDynamicColors:
                 return self_tone
 
             var answer = MaterialDynamicColors._base_tone(role, scheme)
-            var bg_role = MaterialDynamicColors._background_role(role, scheme)
+            var bg_role = MaterialDynamicColors._modern_background_role(
+                role, scheme
+            )
             if bg_role < 0:
+                return answer
+            if not MaterialDynamicColors._modern_has_contrast_curve(
+                role, scheme
+            ):
                 return answer
             var bg_tone = MaterialDynamicColors.get_tone(bg_role, scheme)
             var desired_ratio = MaterialDynamicColors._contrast_curve(
