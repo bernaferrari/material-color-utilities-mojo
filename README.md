@@ -22,18 +22,6 @@ Install dependencies:
 uv sync
 ```
 
-Check the Mojo version:
-
-```sh
-uv run mojo --version
-```
-
-Expected stable version:
-
-```text
-Mojo 1.0.0
-```
-
 ## Tests
 
 Run the full suite:
