@@ -8,7 +8,7 @@ This repository tracks the current TypeScript/Kotlin behavior rather than the ol
 
 ## Status
 
-- Uses stable Mojo `1.0.0b1` through `uv`.
+- Uses Mojo `1.0.0` through `uv`.
 - Ports the Material Color Utilities components used by the upstream TypeScript/Kotlin libraries.
 - Includes modern dynamic color behavior for 2021, Android, 2025, and CMF 2026 schemes.
 - Validated against generated TypeScript parity fixtures for the 2025 dynamic color matrix: `0` mismatches across `18,880` role outputs.
@@ -31,7 +31,7 @@ uv run mojo --version
 Expected stable version:
 
 ```text
-Mojo 1.0.0b1
+Mojo 1.0.0
 ```
 
 ## Tests
