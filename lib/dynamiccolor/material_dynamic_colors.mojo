@@ -733,7 +733,7 @@ struct MaterialDynamicColors:
                 var temp = scheme.copy()
                 temp.is_dark = False
                 temp.contrast_level = 0.0
-                return MaterialDynamicColors._primary_tone(
+                return MaterialDynamicColors.get_tone(
                     _Role.primary_container, temp
                 )
             if role == _Role.primary_fixed_dim:
@@ -748,7 +748,7 @@ struct MaterialDynamicColors:
                 var temp = scheme.copy()
                 temp.is_dark = False
                 temp.contrast_level = 0.0
-                return MaterialDynamicColors._secondary_tone(
+                return MaterialDynamicColors.get_tone(
                     _Role.secondary_container, temp
                 )
             if role == _Role.secondary_fixed_dim:
@@ -763,7 +763,7 @@ struct MaterialDynamicColors:
                 var temp = scheme.copy()
                 temp.is_dark = False
                 temp.contrast_level = 0.0
-                return MaterialDynamicColors._tertiary_tone(
+                return MaterialDynamicColors.get_tone(
                     _Role.tertiary_container, temp
                 )
             if role == _Role.tertiary_fixed_dim:
@@ -948,7 +948,8 @@ struct MaterialDynamicColors:
             if scheme.variant == Variant.vibrant:
                 return 1.29
         if (
-            role == _Role.on_surface
+            role == _Role.on_background
+            or role == _Role.on_surface
             or role == _Role.on_surface_variant
             or role == _Role.outline
             or role == _Role.outline_variant
@@ -1033,9 +1034,27 @@ struct MaterialDynamicColors:
                 )
                 if bg_role >= 0:
                     return MaterialDynamicColors.get_tone(bg_role, scheme)
+        if role == _Role.surface_tint and (
+            MaterialDynamicColors._is_2025(scheme)
+            or MaterialDynamicColors._is_cmf_2026(scheme)
+        ):
+            return MaterialDynamicColors.get_tone(_Role.primary, scheme)
+        if role == _Role.on_background and (
+            MaterialDynamicColors._is_2025(scheme)
+            or MaterialDynamicColors._is_cmf_2026(scheme)
+        ):
+            if scheme.platform == 1:
+                return 100.0
+            return MaterialDynamicColors.get_tone(_Role.on_surface, scheme)
         if role == _Role.on_background or role == _Role.on_surface:
             return 90.0 if scheme.is_dark else 10.0
         if role == _Role.surface_variant:
+            if MaterialDynamicColors._is_2025(
+                scheme
+            ) or MaterialDynamicColors._is_cmf_2026(scheme):
+                return MaterialDynamicColors.get_tone(
+                    _Role.surface_container_highest, scheme
+                )
             return 30.0 if scheme.is_dark else 90.0
         if role == _Role.on_surface_variant:
             return 80.0 if scheme.is_dark else 30.0
@@ -1182,12 +1201,16 @@ struct MaterialDynamicColors:
             or role == _Role.surface_variant
             or role == _Role.surface_tint
             or role == _Role.primary
+            or role == _Role.primary_dim
             or role == _Role.primary_container
             or role == _Role.secondary
+            or role == _Role.secondary_dim
             or role == _Role.secondary_container
             or role == _Role.tertiary
+            or role == _Role.tertiary_dim
             or role == _Role.tertiary_container
             or role == _Role.error
+            or role == _Role.error_dim
             or role == _Role.error_container
             or role == _Role.primary_fixed
             or role == _Role.primary_fixed_dim
@@ -1297,7 +1320,7 @@ struct MaterialDynamicColors:
                 if scheme.platform == 0:
                     return ContrastCurve(4.5, 4.5, 7.0, 11.0)
                 return ContrastCurve(7.0, 7.0, 11.0, 21.0)
-            if role == _Role.on_surface:
+            if role == _Role.on_background or role == _Role.on_surface:
                 if scheme.is_dark and scheme.platform == 0:
                     return ContrastCurve(11.0, 11.0, 21.0, 21.0)
                 return ContrastCurve(9.0, 9.0, 11.0, 21.0)
@@ -1326,6 +1349,18 @@ struct MaterialDynamicColors:
                 or role == _Role.secondary_dim
                 or role == _Role.tertiary_dim
                 or role == _Role.error_dim
+            ):
+                return ContrastCurve(4.5, 4.5, 7.0, 11.0)
+            if (
+                role == _Role.on_primary_fixed
+                or role == _Role.on_secondary_fixed
+                or role == _Role.on_tertiary_fixed
+            ):
+                return ContrastCurve(7.0, 7.0, 11.0, 21.0)
+            if (
+                role == _Role.on_primary_fixed_variant
+                or role == _Role.on_secondary_fixed_variant
+                or role == _Role.on_tertiary_fixed_variant
             ):
                 return ContrastCurve(4.5, 4.5, 7.0, 11.0)
             if (
@@ -1614,6 +1649,19 @@ struct MaterialDynamicColors:
 
     @staticmethod
     def _modern_background_role(role: Int, scheme: DynamicScheme) -> Int:
+        if (
+            role == _Role.primary_fixed_dim
+            or role == _Role.secondary_fixed_dim
+            or role == _Role.tertiary_fixed_dim
+        ):
+            return -1
+        if (
+            role == _Role.primary_dim
+            or role == _Role.secondary_dim
+            or role == _Role.tertiary_dim
+            or role == _Role.error_dim
+        ):
+            return _Role.surface_container_high
         if scheme.platform == 1:
             if (
                 role == _Role.primary_container
@@ -1623,7 +1671,8 @@ struct MaterialDynamicColors:
             ):
                 return -1
             if (
-                role == _Role.on_surface
+                role == _Role.on_background
+                or role == _Role.on_surface
                 or role == _Role.on_surface_variant
                 or role == _Role.outline
                 or role == _Role.outline_variant
@@ -1695,23 +1744,7 @@ struct MaterialDynamicColors:
                 var self_tone = MaterialDynamicColors._base_tone(
                     self_role, scheme
                 )
-                var ref_tone = MaterialDynamicColors._base_tone(
-                    ref_role, scheme
-                )
-                if scheme.platform == 1 and (
-                    role == _Role.primary_container
-                    or role == _Role.secondary_container
-                    or role == _Role.tertiary_container
-                    or role == _Role.error_container
-                ):
-                    ref_tone = MaterialDynamicColors.get_tone(ref_role, scheme)
-                elif (
-                    role == _Role.primary_dim
-                    or role == _Role.secondary_dim
-                    or role == _Role.tertiary_dim
-                    or role == _Role.error_dim
-                ):
-                    ref_tone = MaterialDynamicColors.get_tone(ref_role, scheme)
+                var ref_tone = MaterialDynamicColors.get_tone(ref_role, scheme)
                 var absolute_delta = MaterialDynamicColors._pair_delta(
                     role, scheme
                 )

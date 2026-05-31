@@ -108,7 +108,53 @@ def values[size: Int](items: StaticTuple[Int, size]) -> List[Int]:
     return out^
 
 
+def assert_2025_regression_roles() raises:
+    var red = Hct.from_int(0xFFFF0000)
+    var light = SchemeTonalSpot.make(red.copy(), False, -1.0, 2025, 0)
+    assert_equal(
+        0xFF3E2F2C,
+        MaterialDynamicColors.get_argb(DynamicColorRole.on_background, light),
+    )
+    assert_equal(
+        0xFFEA9D90,
+        MaterialDynamicColors.get_argb(
+            DynamicColorRole.primary_fixed_dim, light
+        ),
+    )
+    assert_equal(
+        0xFF451610,
+        MaterialDynamicColors.get_argb(
+            DynamicColorRole.on_primary_fixed, light
+        ),
+    )
+    assert_equal(
+        0xFF6B332B,
+        MaterialDynamicColors.get_argb(
+            DynamicColorRole.on_primary_fixed_variant, light
+        ),
+    )
+
+    var dark = SchemeTonalSpot.make(red.copy(), True, -1.0, 2025, 0)
+    assert_equal(
+        0xFF9E665E,
+        MaterialDynamicColors.get_argb(DynamicColorRole.primary_dim, dark),
+    )
+    assert_equal(
+        0xFF8F6C67,
+        MaterialDynamicColors.get_argb(DynamicColorRole.secondary_dim, dark),
+    )
+    assert_equal(
+        0xFF926E3A,
+        MaterialDynamicColors.get_argb(DynamicColorRole.tertiary_dim, dark),
+    )
+    assert_equal(
+        0xFFC44B5F,
+        MaterialDynamicColors.get_argb(DynamicColorRole.error_dim, dark),
+    )
+
+
 def main() raises:
+    assert_2025_regression_roles()
     assert_2025_roles(
         0,
         0,
