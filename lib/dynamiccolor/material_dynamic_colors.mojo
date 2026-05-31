@@ -91,6 +91,15 @@ struct MaterialDynamicColors:
         return scheme.variant == Variant.cmf and scheme.spec_version >= 2026
 
     @staticmethod
+    def _is_2025(scheme: DynamicScheme) -> Bool:
+        return scheme.spec_version >= 2025 and (
+            scheme.variant == Variant.neutral
+            or scheme.variant == Variant.tonal_spot
+            or scheme.variant == Variant.expressive
+            or scheme.variant == Variant.vibrant
+        )
+
+    @staticmethod
     def _highest_surface_role(scheme: DynamicScheme) -> Int:
         return _Role.surface_bright if scheme.is_dark else _Role.surface_dim
 
@@ -242,6 +251,59 @@ struct MaterialDynamicColors:
                 return 12.0 if scheme.is_dark else 92.0
             if role == _Role.surface_container_highest:
                 return 15.0 if scheme.is_dark else 90.0
+        if MaterialDynamicColors._is_2025(scheme):
+            if role == _Role.background or role == _Role.surface:
+                if scheme.platform == 1:
+                    return 0.0
+                if scheme.is_dark:
+                    return 4.0
+                if Hct.is_yellow(scheme.neutral_palette.hue):
+                    return 99.0
+                return 97.0 if scheme.variant == Variant.vibrant else 98.0
+            if role == _Role.surface_dim:
+                if scheme.is_dark:
+                    return 4.0
+                if Hct.is_yellow(scheme.neutral_palette.hue):
+                    return 90.0
+                return 85.0 if scheme.variant == Variant.vibrant else 87.0
+            if role == _Role.surface_bright:
+                if scheme.is_dark:
+                    return 18.0 if scheme.spec_version >= 2025 else 24.0
+                if Hct.is_yellow(scheme.neutral_palette.hue):
+                    return 99.0
+                return 97.0 if scheme.variant == Variant.vibrant else 98.0
+            if role == _Role.surface_container_lowest:
+                return 0.0 if scheme.is_dark else 100.0
+            if role == _Role.surface_container_low:
+                if scheme.platform == 1:
+                    return 15.0
+                if scheme.is_dark:
+                    return 6.0
+                if Hct.is_yellow(scheme.neutral_palette.hue):
+                    return 98.0
+                return 95.0 if scheme.variant == Variant.vibrant else 96.0
+            if role == _Role.surface_container:
+                if scheme.platform == 1:
+                    return 20.0
+                if scheme.is_dark:
+                    return 9.0
+                if Hct.is_yellow(scheme.neutral_palette.hue):
+                    return 96.0
+                return 92.0 if scheme.variant == Variant.vibrant else 94.0
+            if role == _Role.surface_container_high:
+                if scheme.platform == 1:
+                    return 25.0
+                if scheme.is_dark:
+                    return 12.0
+                if Hct.is_yellow(scheme.neutral_palette.hue):
+                    return 94.0
+                return 90.0 if scheme.variant == Variant.vibrant else 92.0
+            if role == _Role.surface_container_highest:
+                if scheme.is_dark:
+                    return 15.0
+                if Hct.is_yellow(scheme.neutral_palette.hue):
+                    return 92.0
+                return 88.0 if scheme.variant == Variant.vibrant else 90.0
         if role == _Role.background or role == _Role.surface:
             return 6.0 if scheme.is_dark else 98.0
         if role == _Role.surface_dim:
@@ -321,6 +383,91 @@ struct MaterialDynamicColors:
                 return 20.0 if scheme.is_dark else 100.0
             if role == _Role.inverse_primary:
                 return 40.0 if scheme.is_dark else 80.0
+        if MaterialDynamicColors._is_2025(scheme):
+            if role == _Role.primary or role == _Role.primary_dim:
+                if role == _Role.primary_dim:
+                    if scheme.variant == Variant.neutral:
+                        return 85.0
+                    if scheme.variant == Variant.tonal_spot:
+                        return MaterialDynamicColors._t_max_c(
+                            scheme.primary_palette, 0.0, 90.0
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.primary_palette
+                    )
+                if scheme.variant == Variant.neutral:
+                    if scheme.platform == 0:
+                        return 80.0 if scheme.is_dark else 40.0
+                    return 90.0
+                if scheme.variant == Variant.tonal_spot:
+                    if scheme.platform == 0:
+                        if scheme.is_dark:
+                            return 80.0
+                        return MaterialDynamicColors._t_max_c(
+                            scheme.primary_palette
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.primary_palette, 0.0, 90.0
+                    )
+                if scheme.variant == Variant.expressive:
+                    if scheme.platform == 0:
+                        var upper = 98.0
+                        if Hct.is_yellow(scheme.primary_palette.hue):
+                            upper = 25.0
+                        elif Hct.is_cyan(scheme.primary_palette.hue):
+                            upper = 88.0
+                        return MaterialDynamicColors._t_max_c(
+                            scheme.primary_palette, 0.0, upper
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.primary_palette
+                    )
+                var upper = 98.0
+                if Hct.is_cyan(scheme.primary_palette.hue):
+                    upper = 88.0
+                return MaterialDynamicColors._t_max_c(
+                    scheme.primary_palette, 0.0, upper
+                )
+            if role == _Role.on_primary:
+                return 20.0 if scheme.is_dark else 100.0
+            if role == _Role.primary_container:
+                if scheme.platform == 1:
+                    return 30.0
+                if scheme.variant == Variant.neutral:
+                    return 30.0 if scheme.is_dark else 90.0
+                if scheme.variant == Variant.tonal_spot:
+                    if scheme.is_dark:
+                        return MaterialDynamicColors._t_min_c(
+                            scheme.primary_palette, 35.0, 93.0
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.primary_palette, 0.0, 90.0
+                    )
+                if scheme.variant == Variant.expressive:
+                    if scheme.is_dark:
+                        return MaterialDynamicColors._t_max_c(
+                            scheme.primary_palette, 30.0, 93.0
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.primary_palette,
+                        78.0,
+                        88.0 if Hct.is_cyan(
+                            scheme.primary_palette.hue
+                        ) else 90.0,
+                    )
+                if scheme.is_dark:
+                    return MaterialDynamicColors._t_min_c(
+                        scheme.primary_palette, 66.0, 93.0
+                    )
+                return MaterialDynamicColors._t_max_c(
+                    scheme.primary_palette,
+                    66.0,
+                    88.0 if Hct.is_cyan(scheme.primary_palette.hue) else 93.0,
+                )
+            if role == _Role.on_primary_container:
+                return 20.0 if scheme.is_dark else 100.0
+            if role == _Role.inverse_primary:
+                return MaterialDynamicColors._t_max_c(scheme.primary_palette)
         if scheme.variant == Variant.monochrome:
             if role == _Role.primary:
                 return 100.0 if scheme.is_dark else 0.0
@@ -370,6 +517,59 @@ struct MaterialDynamicColors:
                 return MaterialDynamicColors._t_max_c(
                     scheme.secondary_palette, 61.0, 90.0
                 )
+            if role == _Role.on_secondary_container:
+                return 20.0 if scheme.is_dark else 100.0
+        if MaterialDynamicColors._is_2025(scheme):
+            if role == _Role.secondary or role == _Role.secondary_dim:
+                if role == _Role.secondary_dim:
+                    if scheme.variant == Variant.neutral:
+                        return 85.0
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.secondary_palette, 0.0, 90.0
+                    )
+                if scheme.platform == 1:
+                    if scheme.variant == Variant.neutral:
+                        return 90.0
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.secondary_palette, 0.0, 90.0
+                    )
+                if scheme.variant == Variant.neutral:
+                    if scheme.is_dark:
+                        return MaterialDynamicColors._t_min_c(
+                            scheme.secondary_palette, 0.0, 98.0
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.secondary_palette
+                    )
+                if scheme.variant == Variant.vibrant:
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.secondary_palette,
+                        0.0,
+                        90.0 if scheme.is_dark else 98.0,
+                    )
+                return (
+                    80.0 if scheme.is_dark else MaterialDynamicColors._t_max_c(
+                        scheme.secondary_palette
+                    )
+                )
+            if role == _Role.on_secondary:
+                return 20.0 if scheme.is_dark else 100.0
+            if role == _Role.secondary_container:
+                if scheme.platform == 1:
+                    return 30.0
+                if scheme.variant == Variant.vibrant:
+                    if scheme.is_dark:
+                        return MaterialDynamicColors._t_min_c(
+                            scheme.secondary_palette, 30.0, 40.0
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.secondary_palette, 84.0, 90.0
+                    )
+                if scheme.variant == Variant.expressive:
+                    return 15.0 if scheme.is_dark else MaterialDynamicColors._t_max_c(
+                        scheme.secondary_palette, 90.0, 95.0
+                    )
+                return 25.0 if scheme.is_dark else 90.0
             if role == _Role.on_secondary_container:
                 return 20.0 if scheme.is_dark else 100.0
         if scheme.variant == Variant.monochrome:
@@ -423,6 +623,78 @@ struct MaterialDynamicColors:
                 )
             if role == _Role.on_tertiary_container:
                 return 20.0 if scheme.is_dark else 100.0
+        if MaterialDynamicColors._is_2025(scheme):
+            if role == _Role.tertiary or role == _Role.tertiary_dim:
+                if role == _Role.tertiary_dim:
+                    if scheme.variant == Variant.tonal_spot:
+                        return MaterialDynamicColors._t_max_c(
+                            scheme.tertiary_palette, 0.0, 90.0
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette
+                    )
+                if scheme.platform == 1:
+                    if scheme.variant == Variant.tonal_spot:
+                        return MaterialDynamicColors._t_max_c(
+                            scheme.tertiary_palette, 0.0, 90.0
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette
+                    )
+                if (
+                    scheme.variant == Variant.expressive
+                    or scheme.variant == Variant.vibrant
+                ):
+                    var upper = 98.0 if scheme.is_dark else 100.0
+                    if Hct.is_cyan(scheme.tertiary_palette.hue):
+                        upper = 88.0
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette, 0.0, upper
+                    )
+                if scheme.is_dark:
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette, 0.0, 98.0
+                    )
+                return MaterialDynamicColors._t_max_c(scheme.tertiary_palette)
+            if role == _Role.on_tertiary:
+                return 20.0 if scheme.is_dark else 100.0
+            if role == _Role.tertiary_container:
+                if scheme.platform == 1:
+                    if scheme.variant == Variant.tonal_spot:
+                        return MaterialDynamicColors._t_max_c(
+                            scheme.tertiary_palette, 0.0, 90.0
+                        )
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette
+                    )
+                if scheme.variant == Variant.neutral:
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette,
+                        0.0,
+                        93.0 if scheme.is_dark else 96.0,
+                    )
+                if scheme.variant == Variant.tonal_spot:
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette,
+                        0.0,
+                        93.0 if scheme.is_dark else 100.0,
+                    )
+                if scheme.variant == Variant.expressive:
+                    var upper = 93.0 if scheme.is_dark else 100.0
+                    if Hct.is_cyan(scheme.tertiary_palette.hue):
+                        upper = 88.0
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette, 75.0, upper
+                    )
+                if scheme.is_dark:
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.tertiary_palette, 0.0, 93.0
+                    )
+                return MaterialDynamicColors._t_max_c(
+                    scheme.tertiary_palette, 72.0, 100.0
+                )
+            if role == _Role.on_tertiary_container:
+                return 20.0 if scheme.is_dark else 100.0
         if scheme.variant == Variant.monochrome:
             if role == _Role.tertiary:
                 return 90.0 if scheme.is_dark else 25.0
@@ -456,6 +728,52 @@ struct MaterialDynamicColors:
 
     @staticmethod
     def _fixed_tone(role: Int, scheme: DynamicScheme) -> Float64:
+        if MaterialDynamicColors._is_2025(scheme):
+            if role == _Role.primary_fixed:
+                var temp = scheme.copy()
+                temp.is_dark = False
+                temp.contrast_level = 0.0
+                return MaterialDynamicColors._primary_tone(
+                    _Role.primary_container, temp
+                )
+            if role == _Role.primary_fixed_dim:
+                return MaterialDynamicColors._fixed_tone(
+                    _Role.primary_fixed, scheme
+                )
+            if role == _Role.on_primary_fixed:
+                return 10.0
+            if role == _Role.on_primary_fixed_variant:
+                return 30.0
+            if role == _Role.secondary_fixed:
+                var temp = scheme.copy()
+                temp.is_dark = False
+                temp.contrast_level = 0.0
+                return MaterialDynamicColors._secondary_tone(
+                    _Role.secondary_container, temp
+                )
+            if role == _Role.secondary_fixed_dim:
+                return MaterialDynamicColors._fixed_tone(
+                    _Role.secondary_fixed, scheme
+                )
+            if role == _Role.on_secondary_fixed:
+                return 10.0
+            if role == _Role.on_secondary_fixed_variant:
+                return 30.0
+            if role == _Role.tertiary_fixed:
+                var temp = scheme.copy()
+                temp.is_dark = False
+                temp.contrast_level = 0.0
+                return MaterialDynamicColors._tertiary_tone(
+                    _Role.tertiary_container, temp
+                )
+            if role == _Role.tertiary_fixed_dim:
+                return MaterialDynamicColors._fixed_tone(
+                    _Role.tertiary_fixed, scheme
+                )
+            if role == _Role.on_tertiary_fixed:
+                return 10.0
+            if role == _Role.on_tertiary_fixed_variant:
+                return 30.0
         var mono = MaterialDynamicColors._is_monochrome(scheme)
         if role == _Role.primary_fixed:
             return 40.0 if mono else 90.0
@@ -546,6 +864,126 @@ struct MaterialDynamicColors:
         return scheme.neutral_palette.copy()
 
     @staticmethod
+    def _surface_chroma_multiplier(role: Int, scheme: DynamicScheme) -> Float64:
+        if not MaterialDynamicColors._is_2025(scheme):
+            return 1.0
+        if role == _Role.surface_dim:
+            if scheme.is_dark:
+                return 1.0
+            if scheme.variant == Variant.neutral:
+                return 2.5
+            if scheme.variant == Variant.tonal_spot:
+                return 1.7
+            if scheme.variant == Variant.expressive:
+                return 2.7 if Hct.is_yellow(
+                    scheme.neutral_palette.hue
+                ) else 1.75
+            if scheme.variant == Variant.vibrant:
+                return 1.36
+        if role == _Role.surface_bright:
+            if not scheme.is_dark:
+                return 1.0
+            if scheme.variant == Variant.neutral:
+                return 2.5
+            if scheme.variant == Variant.tonal_spot:
+                return 1.7
+            if scheme.variant == Variant.expressive:
+                return 2.7 if Hct.is_yellow(
+                    scheme.neutral_palette.hue
+                ) else 1.75
+            if scheme.variant == Variant.vibrant:
+                return 1.36
+        if role == _Role.surface_container_low:
+            if scheme.platform != 0:
+                return 1.0
+            if scheme.variant == Variant.neutral:
+                return 1.3
+            if scheme.variant == Variant.tonal_spot:
+                return 1.25
+            if scheme.variant == Variant.expressive:
+                return 1.3 if Hct.is_yellow(
+                    scheme.neutral_palette.hue
+                ) else 1.15
+            if scheme.variant == Variant.vibrant:
+                return 1.08
+        if role == _Role.surface_container:
+            if scheme.platform != 0:
+                return 1.0
+            if scheme.variant == Variant.neutral:
+                return 1.6
+            if scheme.variant == Variant.tonal_spot:
+                return 1.4
+            if scheme.variant == Variant.expressive:
+                return 1.6 if Hct.is_yellow(scheme.neutral_palette.hue) else 1.3
+            if scheme.variant == Variant.vibrant:
+                return 1.15
+        if role == _Role.surface_container_high:
+            if scheme.platform != 0:
+                return 1.0
+            if scheme.variant == Variant.neutral:
+                return 1.9
+            if scheme.variant == Variant.tonal_spot:
+                return 1.5
+            if scheme.variant == Variant.expressive:
+                return 1.95 if Hct.is_yellow(
+                    scheme.neutral_palette.hue
+                ) else 1.45
+            if scheme.variant == Variant.vibrant:
+                return 1.22
+        if (
+            role == _Role.surface_container_highest
+            or role == _Role.surface_variant
+        ):
+            if scheme.variant == Variant.neutral:
+                return 2.2
+            if scheme.variant == Variant.tonal_spot:
+                return 1.7
+            if scheme.variant == Variant.expressive:
+                return 2.3 if Hct.is_yellow(scheme.neutral_palette.hue) else 1.6
+            if scheme.variant == Variant.vibrant:
+                return 1.29
+        if (
+            role == _Role.on_surface
+            or role == _Role.on_surface_variant
+            or role == _Role.outline
+            or role == _Role.outline_variant
+        ):
+            if scheme.platform == 0:
+                if scheme.variant == Variant.neutral:
+                    return 2.2
+                if scheme.variant == Variant.tonal_spot:
+                    return 1.7
+                if scheme.variant == Variant.expressive:
+                    if Hct.is_yellow(scheme.neutral_palette.hue):
+                        return 3.0 if scheme.is_dark else 2.3
+                    return 1.6
+        return 1.0
+
+    @staticmethod
+    def _chroma_multiplier(role: Int, scheme: DynamicScheme) -> Float64:
+        if MaterialDynamicColors._is_cmf_2026(scheme):
+            if role == _Role.surface_dim:
+                return 1.0 if scheme.is_dark else 1.7
+            if role == _Role.surface_bright:
+                return 1.7 if scheme.is_dark else 1.0
+            if role == _Role.surface_container_low:
+                return 1.25
+            if role == _Role.surface_container:
+                return 1.4
+            if role == _Role.surface_container_high:
+                return 1.5
+            if (
+                role == _Role.surface_container_highest
+                or role == _Role.on_surface
+                or role == _Role.on_surface_variant
+                or role == _Role.outline
+                or role == _Role.outline_variant
+                or role == _Role.inverse_surface
+            ):
+                return 1.7
+        return MaterialDynamicColors._surface_chroma_multiplier(role, scheme)
+
+    @staticmethod
     def _base_tone(role: Int, scheme: DynamicScheme) -> Float64:
         if (
             role == _Role.primary_palette_key_color
@@ -561,6 +999,35 @@ struct MaterialDynamicColors:
         var surface_tone = MaterialDynamicColors._surface_tone(role, scheme)
         if surface_tone >= 0.0:
             return surface_tone
+        if MaterialDynamicColors._is_2025(
+            scheme
+        ) or MaterialDynamicColors._is_cmf_2026(scheme):
+            if (
+                role == _Role.on_surface
+                or role == _Role.on_surface_variant
+                or role == _Role.outline
+                or role == _Role.outline_variant
+                or role == _Role.inverse_on_surface
+                or role == _Role.on_primary
+                or role == _Role.on_primary_container
+                or role == _Role.on_secondary
+                or role == _Role.on_secondary_container
+                or role == _Role.on_tertiary
+                or role == _Role.on_tertiary_container
+                or role == _Role.on_error
+                or role == _Role.on_error_container
+                or role == _Role.on_primary_fixed
+                or role == _Role.on_primary_fixed_variant
+                or role == _Role.on_secondary_fixed
+                or role == _Role.on_secondary_fixed_variant
+                or role == _Role.on_tertiary_fixed
+                or role == _Role.on_tertiary_fixed_variant
+            ):
+                var bg_role = MaterialDynamicColors._background_role(
+                    role, scheme
+                )
+                if bg_role >= 0:
+                    return MaterialDynamicColors.get_tone(bg_role, scheme)
         if role == _Role.on_background or role == _Role.on_surface:
             return 90.0 if scheme.is_dark else 10.0
         if role == _Role.surface_variant:
@@ -569,6 +1036,8 @@ struct MaterialDynamicColors:
             return 80.0 if scheme.is_dark else 30.0
         if role == _Role.inverse_surface:
             if MaterialDynamicColors._is_cmf_2026(scheme):
+                return 98.0 if scheme.is_dark else 4.0
+            if MaterialDynamicColors._is_2025(scheme):
                 return 98.0 if scheme.is_dark else 4.0
             return 90.0 if scheme.is_dark else 20.0
         if role == _Role.inverse_on_surface:
@@ -607,9 +1076,19 @@ struct MaterialDynamicColors:
         if role == _Role.error:
             if MaterialDynamicColors._is_cmf_2026(scheme):
                 return MaterialDynamicColors._t_max_c(scheme.error_palette)
+            if MaterialDynamicColors._is_2025(scheme):
+                if scheme.platform == 0:
+                    if scheme.is_dark:
+                        return MaterialDynamicColors._t_min_c(
+                            scheme.error_palette, 0.0, 98.0
+                        )
+                    return MaterialDynamicColors._t_max_c(scheme.error_palette)
+                return MaterialDynamicColors._t_min_c(scheme.error_palette)
             return 80.0 if scheme.is_dark else 40.0
         if role == _Role.on_error:
             if MaterialDynamicColors._is_cmf_2026(scheme):
+                return 20.0 if scheme.is_dark else 100.0
+            if MaterialDynamicColors._is_2025(scheme):
                 return 20.0 if scheme.is_dark else 100.0
             return 20.0 if scheme.is_dark else 100.0
         if role == _Role.error_container:
@@ -617,14 +1096,28 @@ struct MaterialDynamicColors:
                 if scheme.is_dark:
                     return MaterialDynamicColors._t_min_c(scheme.error_palette)
                 return MaterialDynamicColors._t_max_c(scheme.error_palette)
+            if MaterialDynamicColors._is_2025(scheme):
+                if scheme.platform == 1:
+                    return 30.0
+                if scheme.is_dark:
+                    return MaterialDynamicColors._t_min_c(
+                        scheme.error_palette, 30.0, 93.0
+                    )
+                return MaterialDynamicColors._t_max_c(
+                    scheme.error_palette, 0.0, 90.0
+                )
             return 30.0 if scheme.is_dark else 90.0
         if role == _Role.on_error_container:
             if MaterialDynamicColors._is_cmf_2026(scheme):
+                return 20.0 if scheme.is_dark else 100.0
+            if MaterialDynamicColors._is_2025(scheme):
                 return 20.0 if scheme.is_dark else 100.0
             return 90.0 if scheme.is_dark else 10.0
         if role == _Role.error_dim:
             if MaterialDynamicColors._is_cmf_2026(scheme):
                 return MaterialDynamicColors._t_max_c(scheme.error_palette)
+            if MaterialDynamicColors._is_2025(scheme):
+                return MaterialDynamicColors._t_min_c(scheme.error_palette)
             return 80.0 if scheme.is_dark else 40.0
         if MaterialDynamicColors._is_cmf_2026(scheme):
             if role == _Role.primary_fixed or role == _Role.primary_fixed_dim:
@@ -779,6 +1272,75 @@ struct MaterialDynamicColors:
 
     @staticmethod
     def _contrast_curve(role: Int, scheme: DynamicScheme) -> ContrastCurve:
+        if MaterialDynamicColors._is_2025(scheme):
+            if (
+                role == _Role.on_primary
+                or role == _Role.on_secondary
+                or role == _Role.on_tertiary
+                or role == _Role.on_primary_container
+                or role == _Role.on_secondary_container
+                or role == _Role.on_tertiary_container
+            ):
+                if scheme.platform == 0:
+                    return ContrastCurve(6.0, 6.0, 7.0, 11.0)
+                return ContrastCurve(7.0, 7.0, 11.0, 21.0)
+            if role == _Role.on_error:
+                if scheme.platform == 0:
+                    return ContrastCurve(6.0, 6.0, 7.0, 11.0)
+                return ContrastCurve(7.0, 7.0, 11.0, 21.0)
+            if role == _Role.on_error_container:
+                if scheme.platform == 0:
+                    return ContrastCurve(4.5, 4.5, 7.0, 11.0)
+                return ContrastCurve(7.0, 7.0, 11.0, 21.0)
+            if role == _Role.on_surface:
+                if scheme.is_dark and scheme.platform == 0:
+                    return ContrastCurve(11.0, 11.0, 21.0, 21.0)
+                return ContrastCurve(9.0, 9.0, 11.0, 21.0)
+            if role == _Role.on_surface_variant:
+                if scheme.platform == 0:
+                    if scheme.is_dark:
+                        return ContrastCurve(6.0, 6.0, 7.0, 11.0)
+                    return ContrastCurve(4.5, 4.5, 7.0, 11.0)
+                return ContrastCurve(7.0, 7.0, 11.0, 21.0)
+            if role == _Role.outline:
+                if scheme.platform == 0:
+                    return ContrastCurve(3.0, 3.0, 4.5, 7.0)
+                return ContrastCurve(4.5, 4.5, 7.0, 11.0)
+            if role == _Role.outline_variant:
+                if scheme.platform == 0:
+                    return ContrastCurve(1.5, 1.5, 3.0, 5.5)
+                return ContrastCurve(3.0, 3.0, 4.5, 7.0)
+            if role == _Role.inverse_on_surface:
+                return ContrastCurve(7.0, 7.0, 11.0, 21.0)
+            if role == _Role.inverse_primary:
+                if scheme.platform == 0:
+                    return ContrastCurve(6.0, 6.0, 7.0, 11.0)
+                return ContrastCurve(7.0, 7.0, 11.0, 21.0)
+            if (
+                role == _Role.primary
+                or role == _Role.secondary
+                or role == _Role.tertiary
+                or role == _Role.error
+                or role == _Role.primary_dim
+                or role == _Role.secondary_dim
+                or role == _Role.tertiary_dim
+                or role == _Role.error_dim
+            ):
+                if scheme.platform == 0:
+                    return ContrastCurve(4.5, 4.5, 7.0, 11.0)
+                return ContrastCurve(7.0, 7.0, 11.0, 21.0)
+            if (
+                role == _Role.primary_container
+                or role == _Role.secondary_container
+                or role == _Role.tertiary_container
+                or role == _Role.error_container
+                or role == _Role.primary_fixed
+                or role == _Role.secondary_fixed
+                or role == _Role.tertiary_fixed
+            ):
+                if scheme.platform == 0 and scheme.contrast_level > 0.0:
+                    return ContrastCurve(1.5, 1.5, 3.0, 5.5)
+                return ContrastCurve(1.0, 1.0, 1.0, 1.0)
         if MaterialDynamicColors._is_cmf_2026(scheme):
             if (
                 role == _Role.on_primary
@@ -921,9 +1483,123 @@ struct MaterialDynamicColors:
 
     @staticmethod
     def _pair_delta(role: Int, scheme: DynamicScheme) -> Float64:
-        if MaterialDynamicColors._is_cmf_2026(scheme):
+        if MaterialDynamicColors._is_cmf_2026(
+            scheme
+        ) or MaterialDynamicColors._is_2025(scheme):
+            if scheme.platform == 1 and (
+                role == _Role.primary_container
+                or role == _Role.secondary_container
+                or role == _Role.tertiary_container
+                or role == _Role.error_container
+            ):
+                return 10.0
             return 5.0
         return 10.0
+
+    @staticmethod
+    def _modern_role_a(role: Int) -> Int:
+        if role == _Role.primary_dim:
+            return _Role.primary_dim
+        if role == _Role.secondary_dim:
+            return _Role.secondary_dim
+        if role == _Role.tertiary_dim:
+            return _Role.tertiary_dim
+        if role == _Role.error_dim:
+            return _Role.error_dim
+        if role == _Role.primary or role == _Role.primary_container:
+            return _Role.primary_container
+        if role == _Role.secondary or role == _Role.secondary_container:
+            return _Role.secondary_container
+        if role == _Role.tertiary or role == _Role.tertiary_container:
+            return _Role.tertiary_container
+        if role == _Role.error or role == _Role.error_container:
+            return _Role.error_container
+        if role == _Role.primary_fixed or role == _Role.primary_fixed_dim:
+            return _Role.primary_fixed_dim
+        if role == _Role.secondary_fixed or role == _Role.secondary_fixed_dim:
+            return _Role.secondary_fixed_dim
+        return _Role.tertiary_fixed_dim
+
+    @staticmethod
+    def _modern_role_b(role: Int) -> Int:
+        if role == _Role.primary_dim:
+            return _Role.primary
+        if role == _Role.secondary_dim:
+            return _Role.secondary
+        if role == _Role.tertiary_dim:
+            return _Role.tertiary
+        if role == _Role.error_dim:
+            return _Role.error
+        if role == _Role.primary or role == _Role.primary_container:
+            return _Role.primary
+        if role == _Role.secondary or role == _Role.secondary_container:
+            return _Role.secondary
+        if role == _Role.tertiary or role == _Role.tertiary_container:
+            return _Role.tertiary
+        if role == _Role.error or role == _Role.error_container:
+            return _Role.error
+        if role == _Role.primary_fixed or role == _Role.primary_fixed_dim:
+            return _Role.primary_fixed
+        if role == _Role.secondary_fixed or role == _Role.secondary_fixed_dim:
+            return _Role.secondary_fixed
+        return _Role.tertiary_fixed
+
+    @staticmethod
+    def _modern_pair_is_fixed(role: Int) -> Bool:
+        return (
+            role == _Role.primary_fixed
+            or role == _Role.primary_fixed_dim
+            or role == _Role.secondary_fixed
+            or role == _Role.secondary_fixed_dim
+            or role == _Role.tertiary_fixed
+            or role == _Role.tertiary_fixed_dim
+        )
+
+    @staticmethod
+    def _modern_pair_is_darker(role: Int, scheme: DynamicScheme) -> Bool:
+        if (
+            role == _Role.primary_dim
+            or role == _Role.secondary_dim
+            or role == _Role.tertiary_dim
+            or role == _Role.error_dim
+            or role == _Role.primary_fixed_dim
+            or role == _Role.secondary_fixed_dim
+            or role == _Role.tertiary_fixed_dim
+        ):
+            return True
+        if scheme.platform == 1:
+            return (
+                role == _Role.primary_container
+                or role == _Role.secondary_container
+                or role == _Role.tertiary_container
+                or role == _Role.error_container
+            )
+        return False
+
+    @staticmethod
+    def _modern_has_tone_delta_pair(role: Int, scheme: DynamicScheme) -> Bool:
+        if (
+            role == _Role.primary
+            or role == _Role.secondary
+            or role == _Role.tertiary
+            or role == _Role.error
+            or role == _Role.primary_dim
+            or role == _Role.secondary_dim
+            or role == _Role.tertiary_dim
+            or role == _Role.error_dim
+            or role == _Role.primary_fixed_dim
+            or role == _Role.secondary_fixed_dim
+            or role == _Role.tertiary_fixed_dim
+        ):
+            return True
+        if scheme.platform == 1:
+            return (
+                role == _Role.primary_container
+                or role == _Role.secondary_container
+                or role == _Role.tertiary_container
+                or role == _Role.error_container
+            )
+        return False
 
     @staticmethod
     def _pair_stay_together(role: Int) -> Bool:
@@ -934,6 +1610,113 @@ struct MaterialDynamicColors:
     @staticmethod
     def get_tone(role: Int, scheme: DynamicScheme) -> Float64:
         var decreasing_contrast = scheme.contrast_level < 0.0
+
+        if MaterialDynamicColors._is_2025(
+            scheme
+        ) or MaterialDynamicColors._is_cmf_2026(scheme):
+            if MaterialDynamicColors._modern_has_tone_delta_pair(role, scheme):
+                var role_a = MaterialDynamicColors._modern_role_a(role)
+                var role_b = MaterialDynamicColors._modern_role_b(role)
+                if scheme.platform == 1:
+                    if role == _Role.primary_container:
+                        role_b = _Role.primary_dim
+                    elif role == _Role.secondary_container:
+                        role_b = _Role.secondary_dim
+                    elif role == _Role.tertiary_container:
+                        role_b = _Role.tertiary_dim
+                    elif role == _Role.error_container:
+                        role_b = _Role.error_dim
+                var am_role_a = role == role_a
+                var self_role = role_a if am_role_a else role_b
+                var ref_role = role_b if am_role_a else role_a
+                var self_tone = MaterialDynamicColors._base_tone(
+                    self_role, scheme
+                )
+                var ref_tone = MaterialDynamicColors._base_tone(
+                    ref_role, scheme
+                )
+                var absolute_delta = MaterialDynamicColors._pair_delta(
+                    role, scheme
+                )
+                if MaterialDynamicColors._modern_pair_is_darker(role, scheme):
+                    absolute_delta = -absolute_delta
+                else:
+                    if scheme.is_dark:
+                        absolute_delta = -absolute_delta
+                var relative_delta = (
+                    absolute_delta if am_role_a else -absolute_delta
+                )
+
+                if MaterialDynamicColors._modern_pair_is_fixed(role):
+                    self_tone = MathUtils.clampDouble(
+                        0.0, 100.0, ref_tone + relative_delta
+                    )
+                elif relative_delta > 0.0:
+                    self_tone = MathUtils.clampDouble(
+                        ref_tone + relative_delta, 100.0, self_tone
+                    )
+                else:
+                    self_tone = MathUtils.clampDouble(
+                        0.0, ref_tone + relative_delta, self_tone
+                    )
+
+                var bg_role = MaterialDynamicColors._background_role(
+                    role, scheme
+                )
+                if bg_role >= 0:
+                    var bg_tone = MaterialDynamicColors.get_tone(
+                        bg_role, scheme
+                    )
+                    var desired_ratio = MaterialDynamicColors._contrast_curve(
+                        role, scheme
+                    ).getContrast(scheme.contrast_level)
+                    if (
+                        Contrast.ratio_of_tones(bg_tone, self_tone)
+                        < desired_ratio
+                        or decreasing_contrast
+                    ):
+                        self_tone = MaterialDynamicColors.foreground_tone(
+                            bg_tone, desired_ratio
+                        )
+
+                if MaterialDynamicColors._is_background(role) and not (
+                    role == _Role.primary_fixed_dim
+                    or role == _Role.secondary_fixed_dim
+                    or role == _Role.tertiary_fixed_dim
+                ):
+                    if self_tone >= 57.0:
+                        self_tone = MathUtils.clampDouble(
+                            65.0, 100.0, self_tone
+                        )
+                    else:
+                        self_tone = MathUtils.clampDouble(0.0, 49.0, self_tone)
+                return self_tone
+
+            var answer = MaterialDynamicColors._base_tone(role, scheme)
+            var bg_role = MaterialDynamicColors._background_role(role, scheme)
+            if bg_role < 0:
+                return answer
+            var bg_tone = MaterialDynamicColors.get_tone(bg_role, scheme)
+            var desired_ratio = MaterialDynamicColors._contrast_curve(
+                role, scheme
+            ).getContrast(scheme.contrast_level)
+            if (
+                Contrast.ratio_of_tones(bg_tone, answer) < desired_ratio
+                or decreasing_contrast
+            ):
+                answer = MaterialDynamicColors.foreground_tone(
+                    bg_tone, desired_ratio
+                )
+            if MaterialDynamicColors._is_background(role) and not (
+                role == _Role.primary_fixed_dim
+                or role == _Role.secondary_fixed_dim
+                or role == _Role.tertiary_fixed_dim
+            ):
+                if answer >= 57.0:
+                    answer = MathUtils.clampDouble(65.0, 100.0, answer)
+                else:
+                    answer = MathUtils.clampDouble(0.0, 49.0, answer)
+            return answer
 
         if MaterialDynamicColors._has_tone_delta_pair(role):
             var role_a = MaterialDynamicColors._role_a(role)
@@ -1087,7 +1870,14 @@ struct MaterialDynamicColors:
         if role == _Role.shadow or role == _Role.scrim:
             return Hct.from_int(ColorUtils.argbFromLstar(0.0))
         var palette = MaterialDynamicColors.palette_for(role, scheme)
-        return palette.get_hct(MaterialDynamicColors.get_tone(role, scheme))
+        var multiplier = MaterialDynamicColors._chroma_multiplier(role, scheme)
+        var tone = MaterialDynamicColors.get_tone(role, scheme)
+        if multiplier != 1.0:
+            var chroma = palette.chroma * multiplier
+            if tone == 99.0 and Hct.is_yellow(palette.hue):
+                return TonalPalette.of(palette.hue, chroma).get_hct(tone)
+            return Hct.from_hct(palette.hue, chroma, tone)
+        return palette.get_hct(tone)
 
     @staticmethod
     def get_argb(role: Int, scheme: DynamicScheme) -> Int:
