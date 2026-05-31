@@ -440,11 +440,11 @@ struct HctSolver:
 
     @staticmethod
     def critical_plane_below(x: Float64) -> Int:
-        return Int(x - 0.5)
+        return Int(math.floor(x - 0.5))
 
     @staticmethod
     def critical_plane_above(x: Float64) -> Int:
-        return Int(x + 0.5)
+        return Int(math.ceil(x - 0.5))
 
     @staticmethod
     def bisect_to_limit(

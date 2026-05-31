@@ -152,6 +152,28 @@ def assert_2025_regression_roles() raises:
         MaterialDynamicColors.get_argb(DynamicColorRole.error_dim, dark),
     )
 
+    var yellow = Hct.from_int(0xFFFFFF00)
+    var tonal_yellow = SchemeTonalSpot.make(yellow.copy(), False, 0.0, 2025, 0)
+    assert_equal(
+        0xFFFEFCF7,
+        MaterialDynamicColors.get_argb(DynamicColorRole.surface, tonal_yellow),
+    )
+    var vibrant_yellow = SchemeVibrant.make(yellow.copy(), True, 0.0, 2025, 0)
+    assert_equal(
+        0xFFFBE8A2,
+        MaterialDynamicColors.get_argb(
+            DynamicColorRole.on_surface, vibrant_yellow
+        ),
+    )
+
+    var vibrant_red = SchemeVibrant.make(red.copy(), False, -1.0, 2025, 0)
+    assert_equal(
+        0xFF600000,
+        MaterialDynamicColors.get_argb(
+            DynamicColorRole.on_primary_fixed_variant, vibrant_red
+        ),
+    )
+
 
 def main() raises:
     assert_2025_regression_roles()

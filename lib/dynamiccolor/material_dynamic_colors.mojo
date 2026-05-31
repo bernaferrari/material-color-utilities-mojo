@@ -1029,6 +1029,13 @@ struct MaterialDynamicColors:
                 or role == _Role.on_tertiary_fixed
                 or role == _Role.on_tertiary_fixed_variant
             ):
+                if (
+                    role == _Role.on_surface
+                    and scheme.variant == Variant.vibrant
+                ):
+                    return MaterialDynamicColors._t_max_c(
+                        scheme.neutral_palette, 0.0, 100.0, 1.1
+                    )
                 var bg_role = MaterialDynamicColors._modern_background_role(
                     role, scheme
                 )

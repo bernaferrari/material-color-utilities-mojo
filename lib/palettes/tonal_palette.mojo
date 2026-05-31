@@ -148,9 +148,13 @@ struct TonalPalette(Copyable, Movable):
         var red2 = (argb2 >> 16) & 0xFF
         var green2 = (argb2 >> 8) & 0xFF
         var blue2 = argb2 & 0xFF
-        var red = Int(round((Float64(red1) + Float64(red2)) / 2.0))
-        var green = Int(round((Float64(green1) + Float64(green2)) / 2.0))
-        var blue = Int(round((Float64(blue1) + Float64(blue2)) / 2.0))
+        var red = Int(math.floor((Float64(red1) + Float64(red2)) / 2.0 + 0.5))
+        var green = Int(
+            math.floor((Float64(green1) + Float64(green2)) / 2.0 + 0.5)
+        )
+        var blue = Int(
+            math.floor((Float64(blue1) + Float64(blue2)) / 2.0 + 0.5)
+        )
         return (
             (0xFF << 24)
             | ((red & 0xFF) << 16)

@@ -152,6 +152,7 @@ def main() raises:
     )
     assert_equal(expected_yellow_99, yellow_palette.get(99))
     assert_equal(expected_yellow_99, yellow_palette.get_hct(99.0).to_int())
+    assert_equal(0xFFFEFCF7, TonalPalette.of(111.05113959255252, 5.0).get(99))
 
     var palette_1 = TonalPalette.of(270.0, 36.0)
     var palette_2 = TonalPalette.of(180.0, 36.0)
