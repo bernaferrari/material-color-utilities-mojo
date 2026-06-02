@@ -1,5 +1,5 @@
 from std.collections import List
-from std.testing import assert_equal, assert_true
+from std.testing import assert_equal, assert_true, TestSuite
 
 from lib.hct.cam16 import Cam16
 from lib.hct.hct import Hct
@@ -45,7 +45,7 @@ def assert_cam(
     assert_near(cam.q, q, 0.001)
 
 
-def main() raises:
+def test_hct() raises:
     comptime black = 0xFF000000
     comptime white = 0xFFFFFFFF
     comptime red = 0xFFFF0000
@@ -225,3 +225,7 @@ def main() raises:
         .toInt(),
         black,
     )
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

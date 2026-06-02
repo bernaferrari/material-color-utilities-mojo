@@ -1,5 +1,5 @@
 from std.collections import Dict, List
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 
 from lib.score.score import Score
 
@@ -14,7 +14,7 @@ def assert_ranked(
         assert_equal(expected2, actual[2])
 
 
-def main() raises:
+def test_score() raises:
     var chroma_population = Dict[Int, Int]()
     chroma_population[0xFF000000] = 1
     chroma_population[0xFFFFFFFF] = 1
@@ -194,3 +194,7 @@ def main() raises:
     )
     assert_equal(3, len(ranked_ten))
     assert_ranked(ranked_ten, 0xFF27EFFE, 0xFF8B1D99, 0xFF6F558D)
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

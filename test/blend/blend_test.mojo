@@ -1,9 +1,9 @@
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 from lib.blend.blend import Blend
 from lib.utils.string_utils import StringUtils
 
 
-def main() raises:
+def test_blend() raises:
     comptime red: Int = 0xFFFF0000
     comptime blue: Int = 0xFF0000FF
     comptime green: Int = 0xFF00FF00
@@ -44,3 +44,7 @@ def main() raises:
 
     var t12 = Blend.harmonize(yellow, red)
     var rs12 = assert_equal("FFF6E3", StringUtils.hexFromArgb(t12, False))
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

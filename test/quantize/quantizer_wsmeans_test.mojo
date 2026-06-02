@@ -1,5 +1,5 @@
 from std.collections import Dict, List
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 
 from lib.quantize.quantizer_wsmeans import QuantizerWsmeans
 
@@ -18,7 +18,7 @@ def append_color(mut pixels: List[Int], color: Int, count: Int):
         pixels.append(color)
 
 
-def main() raises:
+def test_quantizer_wsmeans() raises:
     comptime red = 0xFFFF0000
     comptime green = 0xFF00FF00
     comptime blue = 0xFF0000FF
@@ -55,3 +55,7 @@ def main() raises:
     )
     assert_equal(1, len(blue_result.color_to_count))
     assert_equal(blue, dict_key_at(blue_result.color_to_count, 0))
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

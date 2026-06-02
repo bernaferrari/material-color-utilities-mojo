@@ -1,5 +1,5 @@
 from std.math import abs
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 
 from lib.utils.math_utils import MathUtils
 
@@ -20,7 +20,7 @@ def original_rotation_direction(
     return 1.0 if c >= 0.0 else -1.0
 
 
-def main() raises:
+def test_math_utils() raises:
     var from_value = 0.0
     while from_value < 360.0:
         var to_value = 7.5
@@ -31,3 +31,7 @@ def main() raises:
             assert_equal(1.0, abs(actual))
             to_value += 15.0
         from_value += 15.0
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

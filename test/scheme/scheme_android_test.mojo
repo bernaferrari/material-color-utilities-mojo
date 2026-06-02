@@ -1,10 +1,10 @@
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 
 from lib.palettes.core_palette import CorePalette
 from lib.scheme.scheme_android import SchemeAndroid
 
 
-def main() raises:
+def test_scheme_android() raises:
     var core = CorePalette.of(0xFFFF0000)
     var light = SchemeAndroid.light_from_core_palette(core)
     assert_equal(core.primary.get(90), light.color_accent_primary)
@@ -117,3 +117,7 @@ def main() raises:
     assert_equal(0xFFFFD9E3, third_party_dark.color_accent_tertiary)
     assert_equal(0xFF313033, third_party_dark.color_surface)
     assert_equal(0xFFF4EFF4, third_party_dark.text_color_primary)
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

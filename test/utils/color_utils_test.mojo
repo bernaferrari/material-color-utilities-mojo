@@ -1,5 +1,5 @@
 from std.math import round
-from std.testing import assert_equal, assert_true
+from std.testing import assert_equal, assert_true, TestSuite
 
 from lib.utils.color_utils import ColorUtils
 
@@ -33,7 +33,7 @@ def assert_rgb_near(
     )
 
 
-def main() raises:
+def test_color_utils() raises:
     for i in range(1234):
         assert_near(
             range_value(3.0, 9999.0, 1234, i),
@@ -156,3 +156,7 @@ def main() raises:
         var y = ColorUtils.xyzFromArgb(argb)[1]
         var y2 = ColorUtils.yFromLstar(lstar)
         assert_near(y, y2, 1.0)
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

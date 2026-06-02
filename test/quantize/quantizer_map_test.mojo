@@ -1,10 +1,10 @@
 from std.collections import List
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 
 from lib.quantize.quantizer_map import QuantizerMap
 
 
-def main() raises:
+def test_quantizer_map() raises:
     var pixels = List[Int]()
     pixels.append(0xFF000000)
     pixels.append(0xFF000000)
@@ -20,3 +20,7 @@ def main() raises:
     assert_equal(2, color_to_count[0xFF000000])
     assert_equal(1, color_to_count[0xFFFFFFFF])
     assert_equal(2, len(color_to_count))
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

@@ -1,4 +1,4 @@
-from std.testing import assert_equal, assert_true
+from std.testing import assert_equal, assert_true, TestSuite
 
 from lib.hct.hct import Hct
 from lib.temperature.temperature_cache import TemperatureCache
@@ -9,7 +9,7 @@ def assert_near(actual: Float64, expected: Float64, tolerance: Float64) raises:
     assert_true(actual <= expected + tolerance)
 
 
-def main() raises:
+def test_temperature_cache() raises:
     assert_near(
         TemperatureCache.raw_temperature(Hct.from_int(0xFF0000FF)),
         -1.393,
@@ -112,3 +112,7 @@ def main() raises:
     assert_equal(0xFFFFFFFF, white_analogous[2].to_int())
     assert_equal(0xFFFFFFFF, white_analogous[3].to_int())
     assert_equal(0xFFFFFFFF, white_analogous[4].to_int())
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

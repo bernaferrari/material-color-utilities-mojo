@@ -1,5 +1,5 @@
 from std.collections import List
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 
 from lib.blend.blend import Blend
 from lib.palettes.core_palette import CorePalette
@@ -7,7 +7,7 @@ from lib.scheme.scheme import Scheme
 from lib.utils.theme_utils import CustomColor, ThemeUtils
 
 
-def main() raises:
+def test_theme_utils() raises:
     var custom_colors = List[CustomColor]()
     custom_colors.append(CustomColor(0xFF00FF00, "brand", True))
     var theme = ThemeUtils.theme_from_source_color(0xFFFF0000, custom_colors^)
@@ -63,3 +63,7 @@ def main() raises:
         0xFFFF0000,
         ThemeUtils.theme_from_image_bytes(bytes, no_custom^).source,
     )
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

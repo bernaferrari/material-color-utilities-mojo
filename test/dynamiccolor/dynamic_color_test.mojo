@@ -1,4 +1,4 @@
-from std.testing import assert_equal, assert_true
+from std.testing import assert_equal, assert_true, TestSuite
 
 from lib import DynamicColor as RootDynamicColor
 from lib.contrast.contrast import Contrast
@@ -137,7 +137,7 @@ def assert_contrast_sweep_for(
     )
 
 
-def main() raises:
+def test_dynamic_color() raises:
     var scheme = SchemeTonalSpot.make(Hct.from_int(0xFF0000FF), False, 0.0)
     var primary = DynamicColor(DynamicColorRole.primary)
     var root_primary = RootDynamicColor(DynamicColorRole.primary)
@@ -316,3 +316,7 @@ def main() raises:
     assert_role_tone(
         dark_mono_fixed, DynamicColorRole.on_tertiary_fixed_variant, 90.0
     )
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

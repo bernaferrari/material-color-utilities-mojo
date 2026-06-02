@@ -1,5 +1,5 @@
 from std.collections import List
-from std.testing import assert_true
+from std.testing import assert_true, TestSuite
 from std.utils import StaticTuple
 
 from lib.dynamiccolor.dynamic_color import DynamicColorRole
@@ -20,7 +20,7 @@ def assert_role_tone(
     assert_near(MaterialDynamicColors.get_hct(role, scheme).tone, expected, 1.0)
 
 
-def main() raises:
+def test_scheme_dynamic() raises:
     var empty_hues = List[Float64]()
     var empty_rotations = List[Float64]()
     assert_near(
@@ -169,3 +169,7 @@ def main() raises:
     assert_role_tone(mono_light, DynamicColorRole.on_tertiary, 90.0)
     assert_role_tone(mono_light, DynamicColorRole.tertiary_container, 49.0)
     assert_role_tone(mono_light, DynamicColorRole.on_tertiary_container, 100.0)
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

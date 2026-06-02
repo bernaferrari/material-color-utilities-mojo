@@ -1,9 +1,9 @@
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 
 from lib.dynamiccolor.contrast_curve import ContrastCurve
 
 
-def main() raises:
+def test_contrast_curve() raises:
     var curve = ContrastCurve(1.0, 3.0, 7.0, 11.0)
     assert_equal(1.0, curve.get(-2.0))
     assert_equal(1.0, curve.get(-1.0))
@@ -15,3 +15,7 @@ def main() raises:
     assert_equal(11.0, curve.get(1.0))
     assert_equal(11.0, curve.get(2.0))
     assert_equal(curve.get(0.25), curve.getContrast(0.25))
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

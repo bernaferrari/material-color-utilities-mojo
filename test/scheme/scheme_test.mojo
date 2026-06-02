@@ -1,4 +1,4 @@
-from std.testing import assert_equal, assert_true
+from std.testing import assert_equal, assert_true, TestSuite
 from std.utils import StaticTuple
 
 from lib.dynamiccolor.dynamic_scheme import DynamicScheme
@@ -13,7 +13,7 @@ def assert_near(actual: Float64, expected: Float64, tolerance: Float64) raises:
     assert_true(actual <= expected + tolerance)
 
 
-def main() raises:
+def test_scheme() raises:
     var light = Scheme.light(0xFF0000FF)
     assert_equal(0xFF343DFF, light.primary)
     assert_equal(0xFFFFFFFF, light.on_primary)
@@ -39,3 +39,7 @@ def main() raises:
 
     var vibrant = SchemeVibrant.make(Hct.from_int(0xFF0000FF), False, 0.0)
     assert_equal(200.0, vibrant.primary_palette.chroma)
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

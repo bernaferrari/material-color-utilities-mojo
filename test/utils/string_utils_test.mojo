@@ -1,10 +1,10 @@
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 
 from lib import StringUtils as RootStringUtils
 from lib.utils.string_utils import StringUtils
 
 
-def main() raises:
+def test_string_utils() raises:
     assert_equal("#3296FA", StringUtils.hexFromArgb(0xFF3296FA))
     assert_equal("3296FA", StringUtils.hexFromArgb(0xFF3296FA, False))
     assert_equal("#000000", StringUtils.hexFromArgb(0xFF000000))
@@ -22,3 +22,7 @@ def main() raises:
         StringUtils.hexFromArgb(0xFF3296FA),
         RootStringUtils.hexFromArgb(0xFF3296FA),
     )
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

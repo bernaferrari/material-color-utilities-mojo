@@ -1,4 +1,4 @@
-from std.testing import assert_equal, assert_true
+from std.testing import assert_equal, assert_true, TestSuite
 from std.utils import StaticTuple
 
 from lib.hct.hct import Hct
@@ -30,7 +30,7 @@ def assert_color_close(actual: Int, expected: Int, tolerance: Int = 2) raises:
     )
 
 
-def main() raises:
+def test_palettes() raises:
     assert_true(Hct.is_yellow(105.0))
     assert_true(Hct.isYellow(124.999))
     assert_true(not Hct.is_yellow(125.0))
@@ -242,3 +242,7 @@ def main() raises:
     assert_equal(0xFF2A2D55, content.secondary.get(20))
     assert_equal(0xFF14173F, content.secondary.get(10))
     assert_equal(0xFF000000, content.secondary.get(0))
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

@@ -1,4 +1,4 @@
-from std.testing import assert_equal, assert_true
+from std.testing import assert_equal, assert_true, TestSuite
 
 from lib.dynamiccolor.variant import Variant
 from lib.hct.hct import Hct
@@ -10,7 +10,7 @@ def assert_near(actual: Float64, expected: Float64, tolerance: Float64) raises:
     assert_true(actual <= expected + tolerance)
 
 
-def main() raises:
+def test_scheme_cmf() raises:
     var primary = Hct.from_int(0xFFFF0000)
     var secondary = Hct.from_int(0xFF0000FF)
     var scheme = SchemeCmf.make_with_secondary(primary, secondary, False, 0.0)
@@ -64,3 +64,7 @@ def main() raises:
     assert_equal(24.0, SchemeCmf.get_error_hue(272.0, 29.0))
     assert_equal(32.0, SchemeCmf.get_error_hue(300.0, 28.0))
     assert_equal(16.0, SchemeCmf.get_error_hue(300.0, 29.0))
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

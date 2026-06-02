@@ -1,4 +1,4 @@
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 from std.collections import List
 
 from lib.dislike.dislike_analyzer import DislikeAnalyzer
@@ -13,7 +13,7 @@ def assert_disliked(color: Int) raises:
     assert_equal(True, DislikeAnalyzer.is_disliked(Hct.from_int(color)))
 
 
-def main() raises:
+def test_dislike_analyzer() raises:
     var monk_skin_tone_scale_colors = List[Int]()
     monk_skin_tone_scale_colors.append(0xFFF6EDE4)
     monk_skin_tone_scale_colors.append(0xFFF3E7DB)
@@ -45,3 +45,7 @@ def main() raises:
     assert_equal(
         tone_67.to_int(), DislikeAnalyzer.fix_if_disliked(tone_67).to_int()
     )
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

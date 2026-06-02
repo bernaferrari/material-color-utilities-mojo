@@ -1,5 +1,5 @@
 from std.collections import Dict, List
-from std.testing import assert_equal, assert_true
+from std.testing import assert_equal, assert_true, TestSuite
 
 from lib.quantize.quantizer_celebi import QuantizerCelebi
 from lib.quantize.quantizer_wu import QuantizerWu
@@ -99,7 +99,7 @@ def multicolor_cases() raises:
     assert_equal(1, celebi_rgb.color_to_count[0xFF0000FF])
 
 
-def main() raises:
+def test_quantizer_celebi() raises:
     single_color_cases()
     multicolor_cases()
 
@@ -125,3 +125,7 @@ def main() raises:
 
     var lab = PointProviderLab.from_int(0xFFFF0000)
     assert_equal(0xFFFF0000, PointProviderLab.to_int(lab))
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

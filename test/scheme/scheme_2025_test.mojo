@@ -1,5 +1,5 @@
 from std.collections import List
-from std.testing import assert_equal
+from std.testing import assert_equal, TestSuite
 from std.utils import StaticTuple
 
 from lib.dynamiccolor.dynamic_color import DynamicColorRole
@@ -175,7 +175,7 @@ def assert_2025_regression_roles() raises:
     )
 
 
-def main() raises:
+def test_scheme_2025() raises:
     assert_2025_regression_roles()
     assert_2025_roles(
         0,
@@ -369,3 +369,7 @@ def main() raises:
             )
         ),
     )
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

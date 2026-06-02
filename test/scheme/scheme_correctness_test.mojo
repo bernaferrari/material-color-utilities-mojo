@@ -1,5 +1,5 @@
 from std.collections import List
-from std.testing import assert_true
+from std.testing import assert_true, TestSuite
 
 from lib.contrast.contrast import Contrast
 from lib.dynamiccolor.contrast_curve import ContrastCurve
@@ -155,7 +155,7 @@ def run_constraints(scheme: DynamicScheme) raises:
     assert_background_tone(scheme, DynamicColorRole.surface_dim)
 
 
-def main() raises:
+def test_scheme_correctness() raises:
     var variants = List[Int]()
     variants.append(Variant.monochrome)
     variants.append(Variant.tonal_spot)
@@ -194,3 +194,7 @@ def main() raises:
                         contrast_level,
                     )
                 )
+
+
+def main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

@@ -17,30 +17,15 @@ uv sync
 Run all tests:
 
 ```sh
-uv run mojo blend_test.mojo
-uv run mojo contrast_test.mojo
-uv run mojo color_utils_test.mojo
-uv run mojo string_utils_test.mojo
-uv run mojo image_utils_test.mojo
-uv run mojo theme_utils_test.mojo
-uv run mojo math_utils_test.mojo
-uv run mojo dislike_analyzer_test.mojo
-uv run mojo hct_test.mojo
-uv run mojo palettes_test.mojo
-uv run mojo score_test.mojo
-uv run mojo temperature_cache_test.mojo
-uv run mojo quantizer_map_test.mojo
-uv run mojo quantizer_wu_test.mojo
-uv run mojo quantizer_wsmeans_test.mojo
-uv run mojo quantizer_celebi_test.mojo
-uv run mojo scheme_test.mojo
-uv run mojo scheme_android_test.mojo
-uv run mojo scheme_2025_test.mojo
-uv run mojo scheme_cmf_test.mojo
-uv run mojo scheme_dynamic_test.mojo
-uv run mojo scheme_correctness_test.mojo
-uv run mojo contrast_curve_test.mojo
-uv run mojo dynamic_color_test.mojo
+for file in $(find test -name '*_test.mojo' | sort); do
+  uv run mojo -I . "$file" || exit 1
+done
+```
+
+Run one test file:
+
+```sh
+uv run mojo -I . test/blend/blend_test.mojo
 ```
 
 Format the code:
@@ -67,7 +52,7 @@ uv run mojo format $(rg --files -g '*.mojo')
 
 ## Coverage
 
-The Mojo implementation is tested for compatibility with the upstream TypeScript Material Color Utilities behavior.
+The implementation is covered by component-level tests across the public color utility APIs.
 
 ## Benchmark
 
